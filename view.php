@@ -116,7 +116,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clue'])) {
     $question_id = $question->id;
     $clues = $_POST['clue'];
 
-    // Insert the clues into the table
+    // Get the existing clues for this question
+    $existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question_id));
+
+    // Delete any clues that were removed from the form
+    foreach ($existing_clues as $existing_clue) {
+        $found = false;
+        foreach ($clues as $key => $clue) {
+            if ($existing_clue->clue_interval == $clue['clue_interval']) {
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $DB->delete_records('cluequiz_clues', array('id' => $existing_clue->id));
+        }
+    }
+
+    // Insert or update the remaining clues into the table
     foreach ($clues as $key => $clue) {
         $data = new stdClass();
         $data->question_id = $question_id;
@@ -207,8 +224,16 @@ echo $OUTPUT->heading(get_string('addquestion', 'mod_cluequiz'));
     <script>
         // Add more clues button functionality
         var addClueBtn = document.querySelector('#add-clue');
+        var removeBtn = document.querySelectorAll('.remove-clue');
         var clueContainer = document.querySelector('#clues-container');
-        var clueIndex =  <?php echo $clue_index - 1 ?>;
+        var clueIndex =  <?php echo $clue_index - 1 ?>
+
+        removeBtn.forEach(x => {
+            x.addEventListener('click', function() {
+                console.log(x.parentNode.parentNode);
+                x.parentNode.parentNode.remove();
+            });
+        });
 
         addClueBtn.addEventListener('click', function(e) {
             e.preventDefault();
