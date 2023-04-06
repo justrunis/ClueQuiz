@@ -1,2 +1,2 @@
-# ClueQUiz
+# ClueQuiz
 Clue quiz plugin
