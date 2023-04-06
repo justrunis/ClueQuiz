@@ -1,0 +1,2 @@
+# ClueQUiz
+Clue quiz plugin
