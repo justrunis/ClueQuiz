@@ -120,25 +120,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clue'])) {
     $existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question_id));
 
     // Delete any clues that were removed from the form
+    $existing_clue_ids = array();
     foreach ($existing_clues as $existing_clue) {
         $found = false;
         foreach ($clues as $key => $clue) {
             if ($existing_clue->clue_interval == $clue['clue_interval']) {
                 $found = true;
+                $existing_clue_ids[] = $existing_clue->id; // Add the ID to the array
                 break;
             }
         }
         if (!$found) {
             $DB->delete_records('cluequiz_clues', array('id' => $existing_clue->id));
+
+            // Decrement the clue_interval of all remaining clues with a higher clue_interval
+            foreach ($existing_clues as $other_clue) {
+                if ($other_clue->clue_interval > $existing_clue->clue_interval) {
+                    $other_clue->clue_interval--;
+                    $DB->update_record('cluequiz_clues', $other_clue);
+                }
+            }
         }
     }
+
+    $remaining_clue_ids = array_diff(array_map(function ($clue) {
+        return $clue->id;
+    }, $existing_clues), $existing_clue_ids);
+
+    if (!empty($remaining_clue_ids)) {
+        $DB->delete_records_list('cluequiz_clues', 'id', $remaining_clue_ids);
+    }
+
+    // Reorder the clues
+    usort($clues, function ($a, $b) {
+        return $a['clue_interval'] - $b['clue_interval'];
+    });
 
     // Insert or update the remaining clues into the table
     foreach ($clues as $key => $clue) {
         $data = new stdClass();
         $data->question_id = $question_id;
         $data->clue_text = $clue['clue_text'];
-        $data->clue_interval = $clue['clue_interval'];
+        $data->clue_interval = $key + 1;
 
         // Check if the clue already exists
         $existing_clue = $DB->get_record('cluequiz_clues', array('question_id' => $question_id, 'clue_interval' => $data->clue_interval));
@@ -154,134 +177,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clue'])) {
     redirect($PAGE->url, "Clues are added", null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
-
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('addquestion', 'mod_cluequiz'));
 
 //$form->display();
-
-?>
-    <form method="post" class="mod_cluequiz_question_form m-form">
-        <div class="m-form__section">
-            <h3 class="m-form__heading"><?php echo get_string('questionheader', 'mod_cluequiz') ?></h3>
-            <div class="m-form__row">
-                <div class="m-form__label">
-                    <label for="id_questiontext"><?php echo get_string('questiontext', 'mod_cluequiz') ?></label>
-                </div>
-                <div class="m-form__input">
-                    <textarea id="id_questiontext" name="questiontext" class="form-control alert-icon" required="required"><?php echo $question->question_text ?></textarea>
-                </div>
-            </div>
-            <div class="m-form__row">
-                <div class="m-form__label">
-                    <label for="id_answertext"><?php echo get_string('answertext', 'mod_cluequiz') ?></label>
-                </div>
-                <div class="m-form__input">
-                    <textarea id="id_answertext" name="answertext" class="form-control alert-icon" required="required"><?php echo $question->answer_text ?></textarea>
-                </div>
-            </div>
-            <div class="m-form__row">
-                <div class="m-form__label">
-                    <label for="id_timeamount"><?php echo get_string('timeamount', 'mod_cluequiz') ?></label>
-                </div>
-                <div class="m-form__input">
-                    <input id="id_timeamount" name="timeamount" class="form-control alert-icon" required="required" type="number" value="<?php echo $question->time_limit ?>">
-                </div>
-            </div>
-        </div>
-        <div class="m-form__actions">
-            <button type="submit" class="btn btn-primary" style="margin-top:10px"><?php echo get_string('save', 'mod_cluequiz') ?></button>
-        </div>
-    </form>
-
-    <form method="post">
-        <div id="clues-container">
-            <?php
-            $existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question->id));
-            $clue_index = 1;
-
-            foreach ($existing_clues as $existing_clue) {
-                ?>
-                <div class="form-group row" id="clue-<?php echo $existing_clue->id; ?>">
-                    <label for="id_clue<?php echo $clue_index; ?>" class="col-md-3 col-form-label d-flex pb-0 pr-md-0"><?php echo get_string('clue', 'mod_cluequiz') . ' ' . $clue_index; ?></label>
-                    <div class="col-md-9">
-                        <textarea name="clue[<?php echo $existing_clue->id; ?>][clue_text]" id="id_clue<?php echo $clue_index; ?>" class="form-control"><?php echo $existing_clue->clue_text; ?></textarea>
-                        <input type="hidden" name="clue[<?php echo $existing_clue->id; ?>][clue_interval]" value="<?php echo $existing_clue->clue_interval; ?>">
-                        <button type="button" class="btn btn-danger remove-clue" data-id="<?php echo $existing_clue->id; ?>">Remove</button>
-                    </div>
-                </div>
-                <?php
-                $clue_index++;
-            }
-            ?>
-        </div>
-        <button type="button" id="add-clue" class="btn btn-primary"><?php echo get_string('addclue', 'mod_cluequiz'); ?></button>
-        <button type="submit" class="btn btn-success"><?php echo get_string('saveclues', 'mod_cluequiz'); ?></button>
-    </form>
+display_question_form($question);
+display_clue_form($DB, $question);
 
 
-    <script>
-        // Add more clues button functionality
-        var addClueBtn = document.querySelector('#add-clue');
-        var removeBtn = document.querySelectorAll('.remove-clue');
-        var clueContainer = document.querySelector('#clues-container');
-        var clueIndex =  <?php echo $clue_index - 1 ?>
-
-        removeBtn.forEach(x => {
-            x.addEventListener('click', function() {
-                console.log(x.parentNode.parentNode);
-                x.parentNode.parentNode.remove();
-            });
-        });
-
-        addClueBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            clueIndex++;
-
-            // Create the clue field
-            var clueField = document.createElement('div');
-            clueField.classList.add('form-group', 'row');
-
-            // Create the hidden field for the clue interval
-            var clueIntervalInput = document.createElement('input');
-            clueIntervalInput.setAttribute('type', 'hidden');
-            clueIntervalInput.setAttribute('name', 'clue[' + clueIndex + '][clue_interval]');
-            clueIntervalInput.setAttribute('value', clueIndex);
-            clueField.appendChild(clueIntervalInput);
-
-            var clueLabel = document.createElement('label');
-            clueLabel.setAttribute('for', 'id_clue' + clueIndex);
-            clueLabel.classList.add('col-md-3', 'col-form-label', 'd-flex', 'pb-0', 'pr-md-0');
-            clueLabel.innerHTML = '<?php echo get_string('clue', 'mod_cluequiz'); ?> ' + clueIndex;
-            clueField.appendChild(clueLabel);
-
-            var clueInput = document.createElement('div');
-            clueInput.classList.add('col-md-9');
-
-            var textarea = document.createElement('textarea');
-            textarea.setAttribute('name', 'clue[' + clueIndex + '][clue_text]');
-            textarea.setAttribute('id', 'id_clue' + clueIndex);
-            textarea.setAttribute('class', 'form-control');
-            clueInput.appendChild(textarea);
-
-            var removeBtn = document.createElement('button');
-            removeBtn.classList.add('btn', 'btn-danger', 'mt-2');
-            removeBtn.setAttribute('type', 'button');
-            removeBtn.setAttribute('id', 'remove-clue-' + clueIndex);
-            removeBtn.innerHTML = 'Remove';
-            removeBtn.addEventListener('click', function() {
-                clueField.remove();
-            });
-            clueInput.appendChild(removeBtn);
-
-            clueField.appendChild(clueInput);
-            clueContainer.appendChild(clueField);
-        });
-    </script>
-
-
-<?php
 echo $OUTPUT->footer();
 
 

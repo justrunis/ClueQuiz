@@ -49,5 +49,6 @@ $string['saveclue'] = 'Save clue';
 $string['clue'] = 'Clue';
 
 $string['saveclues'] = 'Save clues';
+$string['remove'] = 'Remove';
 
 
