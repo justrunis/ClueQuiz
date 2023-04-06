@@ -100,11 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['questiontext'])
         // Update the existing record
         $data->id = $existing_record->id;
         $DB->update_record('cluequiz_questions', $data);
-        $message = "Question updated successfully";
+        $message = get_string('questionupdated', 'mod_cluequiz');
     } else {
         // Insert a new record
         $DB->insert_record('cluequiz_questions', $data);
-        $message = "Question added successfully";
+        $message = get_string('questionadded', 'mod_cluequiz');
     }
 
     // Display a success message and redirect back to the same page.
@@ -174,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clue'])) {
     }
 
     // Display a success message and redirect back to the same page.
-    redirect($PAGE->url, "Clues are added", null, \core\output\notification::NOTIFY_SUCCESS);
+    redirect($PAGE->url, get_string('cluesupdated', 'mod_cluequiz'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
 echo $OUTPUT->header();
@@ -183,9 +183,7 @@ echo $OUTPUT->heading(get_string('addquestion', 'mod_cluequiz'));
 
 //$form->display();
 display_question_form($question);
-display_clue_form($DB, $question);
-
+display_clue_form($DB, $question, $CFG, $cm);
+var_dump($cm->id);
 
 echo $OUTPUT->footer();
-
-

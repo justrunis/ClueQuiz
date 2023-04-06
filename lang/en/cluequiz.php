@@ -37,18 +37,24 @@ $string['addquestion'] = 'Create question with clues';
 $string['questionheader'] = 'Question';
 $string['questiontext'] = 'Question text';
 $string['answertext'] = 'Answer text';
-$string['timeamount'] = 'Time Amount';
+$string['timeamount'] = 'Time Amount in minutes';
 $string['save'] = 'Save question';
+$string['questionadded'] = 'Question added';
+$string['questionupdated'] = 'Question updated';
+
 
 $string['clueheader'] = 'Clues';
 $string['addmoreclues'] = 'Add more clues';
 $string['cluetext'] = 'Clue text';
 $string['clueinterval'] = 'Clue time interval';
-$string['addclue'] = 'Add clue';
+$string['addclue'] = 'Add more clues';
 $string['saveclue'] = 'Save clue';
 $string['clue'] = 'Clue';
+$string['cluesupdated'] = 'Clues updated';
 
 $string['saveclues'] = 'Save clues';
 $string['remove'] = 'Remove';
+
+$string['play'] = 'Start game';
 
 

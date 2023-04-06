@@ -238,7 +238,7 @@ function display_question_form($question){
     <?php
 }
 
-function display_clue_form($DB, $question){
+function display_clue_form($DB, $question, $CFG, $cm){
     $remove_string = get_string('remove', 'mod_cluequiz');
     ?>
     <form method="post">
@@ -266,6 +266,7 @@ function display_clue_form($DB, $question){
         </div>
         <button type="button" id="add-clue" class="btn btn-primary"><?php echo get_string('addclue', 'mod_cluequiz'); ?></button>
         <button type="submit" class="btn btn-success"><?php echo get_string('saveclues', 'mod_cluequiz'); ?></button>
+        <a href="<?php echo $CFG->wwwroot ?>/mod/cluequiz/play.php?id=<?php echo $cm->id ?>" class="btn btn-primary"><?php echo get_string('play', 'mod_cluequiz'); ?></a>
     </form>
 
     <script>
