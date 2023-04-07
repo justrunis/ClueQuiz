@@ -126,10 +126,11 @@ echo $OUTPUT->header();
         }
 
         function displayTimer(remainingMilliseconds) {
-            const minutes = Math.floor((remainingMilliseconds || timeLimitInMilliseconds) / (1000 * 60));
+            const hours = Math.floor((remainingMilliseconds || timeLimitInMilliseconds) / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingMilliseconds || timeLimitInMilliseconds) % (1000 * 60 * 60) / (1000 * 60));
             const seconds = Math.floor(((remainingMilliseconds || timeLimitInMilliseconds) % (1000 * 60)) / 1000);
             // console.error( remainingMilliseconds);
-            document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";
+            document.getElementById("timer").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
             document.getElementById("timer").style.display = "block";
         }
     </script>
