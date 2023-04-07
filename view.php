@@ -184,6 +184,5 @@ echo $OUTPUT->heading(get_string('addquestion', 'mod_cluequiz'));
 //$form->display();
 display_question_form($question);
 display_clue_form($DB, $question, $CFG, $cm);
-var_dump($cm->id);
 
 echo $OUTPUT->footer();

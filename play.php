@@ -63,6 +63,76 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-echo $OUTPUT->header();
+$time_limit = $DB->get_field('cluequiz_questions', 'time_limit', array('activity_id' => $moduleinstance->id));
+$question = $DB->get_record('cluequiz_questions', array('activity_id' => $moduleinstance->id));
 
+$existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question->id));
+$clueCount = sizeof($existing_clues);
+
+/*var_dump($existing_clues);
+
+die();*/
+
+
+echo $OUTPUT->header();
+?>
+    <!-- Display timer -->
+    <span id="timer"></span>
+
+    <!-- Display clues -->
+    <div id="clues">
+        <?php foreach ($existing_clues as $clue):
+            echo "<p style='display: none' id='clue-$clue->id'> $clue->clue_text </p>";
+         endforeach; ?>
+    </div>
+
+    <script>
+        // Get time limit from PHP and convert to milliseconds
+        const timeLimitInMinutes = <?php echo $time_limit; ?>;
+        const timeLimitInMilliseconds = timeLimitInMinutes * 60 * 1000;
+
+        const allClues = document.querySelectorAll("#clues > p");
+
+        // Get clue count from PHP
+        const clueCount = <?php echo $clueCount; ?>;
+
+        let startTime = localStorage.getItem('startTime');
+        if(!startTime){
+            // Start timer
+            startTime = new Date().getTime();
+            localStorage.setItem('startTime', startTime);
+        }
+
+        const timerInterval = setInterval(updateTimer, 100);
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const elapsedMilliseconds = now - startTime;
+            const remainingMilliseconds = timeLimitInMilliseconds - (elapsedMilliseconds % timeLimitInMilliseconds);
+
+            const temp = Math.floor(elapsedMilliseconds / timeLimitInMilliseconds)
+            const remainingClues = clueCount - temp;
+
+            for (let i = 0; i < Math.min(clueCount, temp); i++) {
+                allClues[i].style.display = 'block';
+            }
+            if (remainingClues >= 1) {
+                displayTimer(remainingMilliseconds);
+            } else {
+                // Display final message
+                document.getElementById("timer").innerHTML = "All clues are displayed";
+                clearInterval(timerInterval);
+            }
+        }
+
+        function displayTimer(remainingMilliseconds) {
+            const minutes = Math.floor((remainingMilliseconds || timeLimitInMilliseconds) / (1000 * 60));
+            const seconds = Math.floor(((remainingMilliseconds || timeLimitInMilliseconds) % (1000 * 60)) / 1000);
+            // console.error( remainingMilliseconds);
+            document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";
+            document.getElementById("timer").style.display = "block";
+        }
+    </script>
+
+<?php
 echo $OUTPUT->footer();
