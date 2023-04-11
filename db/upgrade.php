@@ -82,9 +82,9 @@ function xmldb_cluequiz_upgrade($oldversion) {
         }
 
         // Cluequiz savepoint reached.
-        upgrade_mod_savepoint(true, 2023040503, 'cluequiz');
+        upgrade_mod_savepoint(true, 2023040510, 'cluequiz');
     }
-    if ($oldversion < 2023040506) {
+    if ($oldversion < 2023040513) {
 
         // Define table cluequiz_attempts to be created.
         $table = new xmldb_table('cluequiz_attempts');
@@ -94,9 +94,8 @@ function xmldb_cluequiz_upgrade($oldversion) {
         $table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('question_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('answer_text', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('start_time', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('end_time', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('is_correct', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timestamp', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 
         // Adding keys to table cluequiz_attempts.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
@@ -109,8 +108,7 @@ function xmldb_cluequiz_upgrade($oldversion) {
         }
 
         // Cluequiz savepoint reached.
-        upgrade_mod_savepoint(true, 2023040506, 'cluequiz');
+        upgrade_mod_savepoint(true, 2023040513, 'cluequiz');
     }
-
     return true;
 }

@@ -10,7 +10,9 @@
 }
 
 #clues {
-    margin-top: 20px;
+    text-align: center;
+    max-width: 40%;
+    margin: auto;
 }
 
 #clues p {
@@ -21,8 +23,77 @@
     background-color: #f9f9f9;
     border: 1px solid #ccc;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 #clues p.hidden {
     display: none;
 }
+
+#timer-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+#timer-container h3 {
+    margin: 0;
+    text-align: center;
+}
+
+#answer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.mod_cluequiz_answer_form {
+    max-width: 600px;
+    width: 100%;
+}
+
+#question-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#question-text h3 {
+    margin-bottom: 10px;
+}
+
+#question-text p {
+    display: block;
+}
+#answer-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#answer-text h3 {
+    margin-bottom: 10px;
+}
+
+#answer-text p {
+    display: block;
+}
+
+@media only screen and (max-width: 768px) {
+    #clues {
+        text-align: center;
+        max-width: 100%;
+        margin: auto;
+    }
+}
+
+

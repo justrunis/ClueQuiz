@@ -69,71 +69,59 @@ $question = $DB->get_record('cluequiz_questions', array('activity_id' => $module
 $existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question->id));
 $clueCount = sizeof($existing_clues);
 
-/*var_dump($existing_clues);
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer']) && !has_user_answered_correct($DB, $USER, $question->id)) {
+    $user_id = $USER->id;
+    $question_id = $question->id;
+    $correct_answer = $question->answer_text;
+    $rawgrade = 100;
 
-die();*/
+    // Get the user's submitted answer
+    $user_answer = $_POST['answer'];
+
+    // Check if the user's answer is correct
+    if(strtolower(str_replace(' ', '', $user_answer)) == strtolower(str_replace(' ', '', $correct_answer))){
+        $is_correct = 1;
+        write_cluequiz_user_grade($moduleinstance, $USER, $PAGE, $rawgrade);
+    }
+    else{
+        $is_correct = 0;
+        $_SESSION['message'] = '<div class="alert alert-danger">' . get_string('incorrectanswer', 'mod_cluequiz') . '</div>';
+    }
+
+    // Insert the user's answer into the database
+    $data = array(
+        'user_id' => $user_id,
+        'question_id' => $question_id,
+        'answer_text' => $user_answer,
+        'is_correct' => $is_correct,
+        'timestamp' => time()
+    );
+    $DB->insert_record('cluequiz_attempts', $data);
+
+    // Redirect to the same page to prevent form resubmission
+    redirect(new moodle_url('/mod/cluequiz/play.php', array('id' => $cm->id)));
+
+}
 
 
 echo $OUTPUT->header();
-?>
-    <!-- Display timer -->
-    <span id="timer"></span>
+if(has_user_answered_correct($DB, $USER, $question->id)){
+    echo '<div class="alert alert-success" role="alert">'.get_string('correctanswer', 'mod_cluequiz').'</div>';
+}
 
-    <!-- Display clues -->
-    <div id="clues">
-        <?php foreach ($existing_clues as $clue):
-            echo "<p style='display: none' id='clue-$clue->id'> $clue->clue_text </p>";
-         endforeach; ?>
-    </div>
+if (isset($_SESSION['message'])) {
+    echo $_SESSION['message'];
+    unset($_SESSION['message']);
+}
 
-    <script>
-        // Get time limit from PHP and convert to milliseconds
-        const timeLimitInMinutes = <?php echo $time_limit; ?>;
-        const timeLimitInMilliseconds = timeLimitInMinutes * 60 * 1000;
+display_question($question);
+if(!has_user_answered_correct($DB, $USER, $question->id)){
+    display_question_clues($existing_clues, $clueCount, $time_limit);
+    display_answer_submit_form($PAGE);
+}
+else{
+    display_correct_answer($question);
+    create_back_to_course_button($PAGE->course->id, true);
+}
 
-        const allClues = document.querySelectorAll("#clues > p");
-
-        // Get clue count from PHP
-        const clueCount = <?php echo $clueCount; ?>;
-
-        let startTime = localStorage.getItem('startTime');
-        if(!startTime){
-            // Start timer
-            startTime = new Date().getTime();
-            localStorage.setItem('startTime', startTime);
-        }
-
-        const timerInterval = setInterval(updateTimer, 100);
-
-        function updateTimer() {
-            const now = new Date().getTime();
-            const elapsedMilliseconds = now - startTime;
-            const remainingMilliseconds = timeLimitInMilliseconds - (elapsedMilliseconds % timeLimitInMilliseconds);
-
-            const temp = Math.floor(elapsedMilliseconds / timeLimitInMilliseconds)
-            const remainingClues = clueCount - temp;
-
-            for (let i = 0; i < Math.min(clueCount, temp); i++) {
-                allClues[i].style.display = 'block';
-            }
-            if (remainingClues >= 1) {
-                displayTimer(remainingMilliseconds);
-            } else {
-                // Display final message
-                document.getElementById("timer").innerHTML = "All clues are displayed";
-                clearInterval(timerInterval);
-            }
-        }
-
-        function displayTimer(remainingMilliseconds) {
-            const hours = Math.floor((remainingMilliseconds || timeLimitInMilliseconds) / (1000 * 60 * 60));
-            const minutes = Math.floor((remainingMilliseconds || timeLimitInMilliseconds) % (1000 * 60 * 60) / (1000 * 60));
-            const seconds = Math.floor(((remainingMilliseconds || timeLimitInMilliseconds) % (1000 * 60)) / 1000);
-            // console.error( remainingMilliseconds);
-            document.getElementById("timer").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
-            document.getElementById("timer").style.display = "block";
-        }
-    </script>
-
-<?php
 echo $OUTPUT->footer();

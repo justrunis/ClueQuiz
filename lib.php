@@ -216,7 +216,7 @@ function display_question_form($question){
             </div>
             <div class="m-form__row">
                 <div class="m-form__label">
-                    <label for="id_answertext"><?php echo get_string('answertext', 'mod_cluequiz') ?></label>
+                    <label for="id_answertext"><?php echo get_string('questionanswertext', 'mod_cluequiz') ?></label>
                 </div>
                 <div class="m-form__input">
                     <textarea id="id_answertext" name="answertext" class="form-control alert-icon" required="required"><?php echo $question->answer_text ?></textarea>
@@ -256,7 +256,6 @@ function display_clue_form($DB, $question, $CFG, $cm){
                         <textarea name="clue[<?php echo $existing_clue->id; ?>][clue_text]" id="id_clue<?php echo $clue_index; ?>" class="form-control"><?php echo $existing_clue->clue_text; ?></textarea>
                         <input type="hidden" name="clue[<?php echo $existing_clue->id; ?>][clue_interval]" value="<?php echo $existing_clue->clue_interval; ?>">
                         <button type="button" class="btn btn-danger remove-clue mt-2" data-id="<?php echo $existing_clue->id; ?>"><?php echo get_string('remove', 'mod_cluequiz')  ?></button>
-
                     </div>
                 </div>
                 <?php
@@ -265,9 +264,13 @@ function display_clue_form($DB, $question, $CFG, $cm){
             ?>
         </div>
         <button type="button" id="add-clue" class="btn btn-primary"><?php echo get_string('addclue', 'mod_cluequiz'); ?></button>
-        <button type="submit" class="btn btn-success"><?php echo get_string('saveclues', 'mod_cluequiz'); ?></button>
+        <button type="submit" class="btn btn-primary"><?php echo get_string('saveclues', 'mod_cluequiz'); ?></button>
         <a href="<?php echo $CFG->wwwroot ?>/mod/cluequiz/play.php?id=<?php echo $cm->id ?>" class="btn btn-primary"><?php echo get_string('play', 'mod_cluequiz'); ?></a>
     </form>
+    <input type="hidden" id="clue_index" value="<?php echo $clue_index; ?>">
+    <input type="hidden" id="remove_string" value="<?php echo $remove_string; ?>">
+    <input type="hidden" id="clueLabelString" value="<?php echo get_string('clue', 'mod_cluequiz'); ?>">
+
 
     <script>
         // Add more clues button functionality
@@ -328,4 +331,132 @@ function display_clue_form($DB, $question, $CFG, $cm){
         });
     </script>
     <?php
+}
+
+function display_question($question){
+    ?>
+    <div id="question-text">
+        <h3>Question</h3>
+        <p><?php echo $question->question_text; ?></p>
+    </div>
+    <?php
+}
+
+function display_question_clues($existing_clues, $clueCount, $time_limit){
+    ?>
+    <!-- Display timer -->
+    <div id="timer-container">
+        <h3>Time for next clue</h3>
+        <span id="timer"></span>
+    </div>
+    <!-- Display clues -->
+    <input type="hidden" id="clueCount" value="<?php echo $clueCount; ?>">
+    <input type="hidden" id="timeLimit" value="<?php echo $time_limit; ?>">
+    <div id="clues">
+        <?php
+        $i = 1;
+        foreach ($existing_clues as $clue):
+            echo "<p style='display: none' id='clue-$clue->id'><b>" .
+                get_string('clue', 'mod_cluequiz') . " $i:</b> $clue->clue_text </p>";
+            $i++;
+        endforeach;
+        ?>
+    </div>
+
+
+    <script src="JavaScript/timer.js"></script>
+    <?php
+}
+
+function display_answer_submit_form($PAGE){
+    ?>
+    <div id="answer-container">
+        <form method="post" class="mod_cluequiz_answer_form m-form">
+            <div class="m-form__section">
+                <h3 class="m-form__heading"><?php echo get_string('answerheader', 'mod_cluequiz') ?></h3>
+                <div class="m-form__row">
+                    <div class="m-form__label">
+                        <label for="id_answer"><?php echo get_string('answertext', 'mod_cluequiz') ?></label>
+                    </div>
+                    <div class="m-form__input">
+                        <textarea id="id_answer" name="answer" class="form-control alert-icon" required="required"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="m-form__actions">
+                <button type="submit" class="btn btn-primary" style="margin-top:10px"><?php echo get_string('submitanswer', 'mod_cluequiz') ?></button>
+                <?php create_back_to_course_button($PAGE->course->id, false); ?>
+            </div>
+        </form>
+    </div>
+    <?php
+}
+
+function has_user_answered_correct($DB, $USER, $question_id): bool {
+    $attempts = $DB->get_records('cluequiz_attempts', array('user_id' => $USER->id));
+
+    foreach ($attempts as $attempt) {
+        if($attempt->is_correct == 1 && $question_id == $attempt->question_id){
+            return true;
+        }
+    }
+    return false;
+}
+
+function write_cluequiz_user_grade($moduleInstance, $USER, $PAGE, $rawgrade){
+
+    if (!is_object($moduleInstance) || !is_object($USER) || !is_object($PAGE)) {
+        throw new InvalidArgumentException(get_string('invalidinputparameters','mod_cluequiz'));
+    }
+
+    if (!is_numeric($rawgrade) || $rawgrade < 0 || $rawgrade > 100) {
+        throw new InvalidArgumentException(get_string('invalidgradevalue','mod_cluequiz'));
+    }
+
+    $item = array(
+        'itemname' => $moduleInstance->name,
+        'gradetype' => GRADE_TYPE_VALUE,
+        'grademax' => 100,
+        'grademin' => 0
+    );
+
+    $grade = array(
+        'userid' => $USER->id,
+        'rawgrade' => $rawgrade,
+        'dategraded' => (new DateTime())->getTimestamp(),
+        'datesubmitted' => (new DateTime())->getTimestamp(),
+    );
+
+    $grades = [$USER->id => (object)$grade];
+
+    grade_update('mod_cluequiz', $PAGE->course->id, 'mod', 'cluequiz', $moduleInstance->id, 0, $grades, $item);
+}
+
+function display_correct_answer($question) {
+    ?>
+    <div id="answer-text">
+        <h3>Correct answer</h3>
+        <p><?php echo $question->answer_text; ?></p>
+    </div>
+    <?php
+}
+
+
+function create_back_to_course_button($courseid, $needCenter) {
+
+    $url = new moodle_url('/course/view.php', array('id' => $courseid));
+
+    $style = 'margin-top:10px';
+    if($needCenter){
+        $style = 'margin-top:10px; text-align: center; display: inline-block; margin: 0 auto; text-align: center;';
+    }
+
+    $link_attributes = array(
+        'href' => $url->out(),
+        'class' => 'btn btn-primary',
+        'style'=>$style,
+    );
+    echo html_writer::start_tag('a', $link_attributes);
+    echo get_string('back', 'mod_cluequiz');
+    echo html_writer::end_tag('a');
 }

@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Clue Quiz';
 $string['modulename'] = 'Clue Quiz';
 $string['modulenameplural'] = 'CLUE QUIZ';
+$string['modulenameicon'] = '<img src="'.$CFG->wwwroot.'/mod/cluequiz/pix/icon.svg" class="icon" alt="Clue Quiz icon" />';
 
 $string['cluequizname'] = 'Clue quiz name';
 $string['cluequizname_help'] = 'Set the activity name';
@@ -36,7 +37,7 @@ $string['pluginadministration'] = 'Plugin administrator';
 $string['addquestion'] = 'Create question with clues';
 $string['questionheader'] = 'Question';
 $string['questiontext'] = 'Question text';
-$string['answertext'] = 'Answer text';
+$string['questionanswertext'] = 'Answer text';
 $string['timeamount'] = 'Time to show next hint (min)';
 $string['save'] = 'Save question';
 $string['questionadded'] = 'Question added';
@@ -46,8 +47,7 @@ $string['clueheader'] = 'Clues';
 $string['addmoreclues'] = 'Add more clues';
 $string['cluetext'] = 'Clue text';
 $string['clueinterval'] = 'Clue time interval';
-$string['addclue'] = 'Add more clues';
-$string['saveclue'] = 'Save clue';
+$string['addclue'] = 'Add another clue';
 $string['clue'] = 'Clue';
 $string['cluesupdated'] = 'Clues updated';
 
@@ -55,3 +55,11 @@ $string['saveclues'] = 'Save clues';
 $string['remove'] = 'Remove';
 
 $string['play'] = 'Start game';
+
+$string['answerheader'] = 'Answer';
+$string['answertext'] = 'Enter your answer';
+$string['submitanswer'] = 'Submit answer';
+$string['back'] = 'Back to start';
+
+$string['correctanswer'] = 'Your answer is correct, press back to start to go back';
+$string['incorrectanswer'] = 'Your answer is inccorect, please try again';

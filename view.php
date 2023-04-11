@@ -48,6 +48,10 @@ if ($id) {
 
 require_login($course, true, $cm);
 
+if (!is_siteadmin()) {
+    redirect(new moodle_url('/mod/cluequiz/play.php', array('id' => $cm->id)));
+}
+
 $modulecontext = context_module::instance($cm->id);
 
 $event = \mod_cluequiz\event\course_module_viewed::create(array(
