@@ -33,6 +33,13 @@
     display: none;
 }
 
+#clue-separator{
+    border: none;
+    height: 2px;
+    background-color: #ccc;
+    margin: 1rem 0;
+}
+
 #timer-container {
     display: flex;
     align-items: center;

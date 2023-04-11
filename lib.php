@@ -232,7 +232,7 @@ function display_question_form($question){
             </div>
         </div>
         <div class="m-form__actions">
-            <button type="submit" class="btn btn-primary" style="margin-top:10px"><?php echo get_string('save', 'mod_cluequiz') ?></button>
+            <button type="submit" class="btn btn-success" style="margin-top:10px"><?php echo get_string('save', 'mod_cluequiz') ?></button>
         </div>
     </form>
     <?php
@@ -263,10 +263,10 @@ function display_clue_form($DB, $question, $CFG, $cm){
             }
             ?>
         </div>
-        <button type="button" id="add-clue" class="btn btn-primary"><?php echo get_string('addclue', 'mod_cluequiz'); ?></button>
-        <button type="submit" class="btn btn-primary"><?php echo get_string('saveclues', 'mod_cluequiz'); ?></button>
-        <a href="<?php echo $CFG->wwwroot ?>/mod/cluequiz/play.php?id=<?php echo $cm->id ?>" class="btn btn-primary"><?php echo get_string('play', 'mod_cluequiz'); ?></a>
+        <button type="submit" class="btn btn-success"><?php echo get_string('saveclues', 'mod_cluequiz'); ?></button>
     </form>
+    <button type="button" id="add-clue" class="btn btn-primary" style="margin-top: 10px"><?php echo get_string('addclue', 'mod_cluequiz'); ?></button>
+    <a href="<?php echo $CFG->wwwroot ?>/mod/cluequiz/play.php?id=<?php echo $cm->id ?>" class="btn btn-primary" style="margin-top: 10px"><?php echo get_string('play', 'mod_cluequiz'); ?></a>
     <input type="hidden" id="clue_index" value="<?php echo $clue_index; ?>">
     <input type="hidden" id="remove_string" value="<?php echo $remove_string; ?>">
     <input type="hidden" id="clueLabelString" value="<?php echo get_string('clue', 'mod_cluequiz'); ?>">
