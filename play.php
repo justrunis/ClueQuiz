@@ -75,6 +75,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer']) && !has_user
     $correct_answer = $question->answer_text;
     $rawgrade = 100;
 
+    $users_attempts = $DB->get_records('cluequiz_attempts', array('user_id' => $user_id, 'question_id' => $question_id));
+    foreach ($users_attempts as $attempt){
+        if(time() - $attempt->timestamp <= 60){
+            $_SESSION['message'] = '<div class="alert alert-danger">' . get_string('spamtext', 'mod_cluequiz') . '</div>';
+            break;
+        }
+    }
+
     // Get the user's submitted answer
     $user_answer = $_POST['answer'];
 
@@ -100,9 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer']) && !has_user
 
     // Redirect to the same page to prevent form resubmission
     redirect(new moodle_url('/mod/cluequiz/play.php', array('id' => $cm->id)));
-
 }
-
 
 echo $OUTPUT->header();
 if(has_user_answered_correct($DB, $USER, $question->id)){

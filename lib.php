@@ -211,7 +211,9 @@ function display_question_form($question){
                     <label for="id_questiontext"><?php echo get_string('questiontext', 'mod_cluequiz') ?></label>
                 </div>
                 <div class="m-form__input">
-                    <textarea id="id_questiontext" name="questiontext" class="form-control alert-icon" required="required"><?php echo $question->question_text ?></textarea>
+                    <textarea id="id_questiontext" name="questiontext" class="form-control alert-icon" required="required"
+                    ><?php echo !empty($question->question_text) ? $question->question_text : ''; ?>
+                    </textarea>
                 </div>
             </div>
             <div class="m-form__row">
@@ -219,7 +221,9 @@ function display_question_form($question){
                     <label for="id_answertext"><?php echo get_string('questionanswertext', 'mod_cluequiz') ?></label>
                 </div>
                 <div class="m-form__input">
-                    <textarea id="id_answertext" name="answertext" class="form-control alert-icon" required="required"><?php echo $question->answer_text ?></textarea>
+                    <textarea id="id_answertext" name="answertext" class="form-control alert-icon" required="required"
+                    ><?php echo !empty($question->answer_text) ? $question->answer_text : ''; ?>
+                    </textarea>
                 </div>
             </div>
             <div class="m-form__row">
@@ -227,12 +231,15 @@ function display_question_form($question){
                     <label for="id_timeamount"><?php echo get_string('timeamount', 'mod_cluequiz') ?></label>
                 </div>
                 <div class="m-form__input">
-                    <input id="id_timeamount" name="timeamount" class="form-control alert-icon" required="required" type="number" value="<?php echo $question->time_limit ?>">
+                    <input id="id_timeamount" name="timeamount" class="form-control alert-icon" required="required" type="number"
+                           value="<?php echo !empty($question->time_limit) ? $question->time_limit : ''; ?>">
                 </div>
             </div>
         </div>
         <div class="m-form__actions">
-            <button type="submit" class="btn btn-success" style="margin-top:10px"><?php echo get_string('save', 'mod_cluequiz') ?></button>
+            <button type="submit" class="btn btn-success" style="margin-top:10px">
+                <?php echo get_string('save', 'mod_cluequiz') ?>
+            </button>
         </div>
     </form>
     <?php
@@ -245,32 +252,44 @@ function display_clue_form($DB, $question, $CFG, $cm){
         <div id="clues-container">
             <h3 class="m-form__heading"><?php echo get_string('clueheader', 'mod_cluequiz') ?></h3>
             <?php
-            $existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question->id));
+            if (!empty($question)) {
+                $existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question->id));
+            } else {
+                $existing_clues = array();
+            }
             $clue_index = 1;
 
             foreach ($existing_clues as $existing_clue) {
-                ?>
-                <div class="form-group row" id="clue-<?php echo $existing_clue->id; ?>">
-                    <label for="id_clue<?php echo $clue_index; ?>" class="col-md-3 col-form-label d-flex pb-0 pr-md-0"><?php echo get_string('clue', 'mod_cluequiz') . ' ' . $clue_index; ?></label>
-                    <div class="col-md-9">
-                        <textarea name="clue[<?php echo $existing_clue->id; ?>][clue_text]" id="id_clue<?php echo $clue_index; ?>" class="form-control"><?php echo $existing_clue->clue_text; ?></textarea>
-                        <input type="hidden" name="clue[<?php echo $existing_clue->id; ?>][clue_interval]" value="<?php echo $existing_clue->clue_interval; ?>">
-                        <button type="button" class="btn btn-danger remove-clue mt-2" data-id="<?php echo $existing_clue->id; ?>"><?php echo get_string('remove', 'mod_cluequiz')  ?></button>
+                if (isset($existing_clue)): ?>
+                    <div class="form-group row clue" id="clue-<?php echo $existing_clue->id; ?>">
+                        <label for="id_clue<?php echo $clue_index; ?>" class="col-md-3 col-form-label d-flex pb-0 pr-md-0">
+                            <?php echo get_string('clue', 'mod_cluequiz') . ' ' . $clue_index; ?>
+                        </label>
+                        <div class="col-md-9">
+                            <textarea name="clue[clue_text][]" id="id_clue<?php echo $clue_index; ?>" class="form-control"
+                            ><?php echo $existing_clue->clue_text; ?>
+                            </textarea>
+                            <input type="hidden" name="clue[id][]" value="<?php echo $existing_clue->id; ?>">
+                            <button type="button" class="btn btn-danger remove-clue mt-2" data-id="<?php echo $existing_clue->id; ?>">
+                                <?php echo get_string('remove', 'mod_cluequiz')  ?>
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <?php
-                $clue_index++;
+                <?php $clue_index++;endif;
             }
             ?>
         </div>
         <button type="submit" class="btn btn-success"><?php echo get_string('saveclues', 'mod_cluequiz'); ?></button>
     </form>
-    <button type="button" id="add-clue" class="btn btn-primary" style="margin-top: 10px"><?php echo get_string('addclue', 'mod_cluequiz'); ?></button>
-    <a href="<?php echo $CFG->wwwroot ?>/mod/cluequiz/play.php?id=<?php echo $cm->id ?>" class="btn btn-primary" style="margin-top: 10px"><?php echo get_string('play', 'mod_cluequiz'); ?></a>
+    <button type="button" id="add-clue" class="btn btn-primary" style="margin-top: 10px">
+        <?php echo get_string('addclue', 'mod_cluequiz'); ?>
+    </button>
+    <a href="<?php echo $CFG->wwwroot ?>/mod/cluequiz/play.php?id=<?php echo $cm->id ?>" class="btn btn-primary" style="margin-top: 10px">
+        <?php echo get_string('play', 'mod_cluequiz'); ?>
+    </a>
     <input type="hidden" id="clue_index" value="<?php echo $clue_index; ?>">
     <input type="hidden" id="remove_string" value="<?php echo $remove_string; ?>">
     <input type="hidden" id="clueLabelString" value="<?php echo get_string('clue', 'mod_cluequiz'); ?>">
-
 
     <script>
         // Add more clues button functionality
@@ -279,12 +298,24 @@ function display_clue_form($DB, $question, $CFG, $cm){
         var clueContainer = document.querySelector('#clues-container');
         var clueIndex =  '<?php echo $clue_index - 1 ?>';
         var removeString = '<?php echo $remove_string ?>';
+        var cluetext = '<?php echo get_string('clue', 'mod_cluequiz') ?>';
 
         removeBtn.forEach(x => {
                 x.addEventListener('click', function() {
                     x.parentNode.parentNode.remove();
+                    updateTitles();
                 });
             });
+
+        function updateTitles(){
+            let clues = document.querySelectorAll('.clue');
+            let index = 0;
+            clues.forEach((x =>{
+                index++;
+                let label = x.querySelector('label');
+                label.innerHTML = cluetext + ' ' + index;
+            }));
+        }
 
         addClueBtn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -292,13 +323,11 @@ function display_clue_form($DB, $question, $CFG, $cm){
 
             // Create the clue field
             var clueField = document.createElement('div');
-            clueField.classList.add('form-group', 'row');
+            clueField.classList.add('form-group', 'row', 'clue');
 
-            // Create the hidden field for the clue interval
             var clueIntervalInput = document.createElement('input');
             clueIntervalInput.setAttribute('type', 'hidden');
-            clueIntervalInput.setAttribute('name', 'clue[' + clueIndex + '][clue_interval]');
-            clueIntervalInput.setAttribute('value', clueIndex);
+            clueIntervalInput.setAttribute('name', 'clue[id][]');
             clueField.appendChild(clueIntervalInput);
 
             var clueLabel = document.createElement('label');
@@ -311,7 +340,7 @@ function display_clue_form($DB, $question, $CFG, $cm){
             clueInput.classList.add('col-md-9');
 
             var textarea = document.createElement('textarea');
-            textarea.setAttribute('name', 'clue[' + clueIndex + '][clue_text]');
+            textarea.setAttribute('name', 'clue[clue_text][]');
             textarea.setAttribute('id', 'id_clue' + clueIndex);
             textarea.setAttribute('class', 'form-control');
             clueInput.appendChild(textarea);
@@ -323,11 +352,14 @@ function display_clue_form($DB, $question, $CFG, $cm){
             removeBtn.innerHTML = removeString;
             removeBtn.addEventListener('click', function() {
                 clueField.remove();
+                updateTitles()
+                clueIndex--;
             });
             clueInput.appendChild(removeBtn);
 
             clueField.appendChild(clueInput);
             clueContainer.appendChild(clueField);
+            updateTitles()
         });
     </script>
     <?php
@@ -363,7 +395,6 @@ function display_question_clues($existing_clues, $clueCount, $time_limit){
         ?>
     </div>
 
-
     <script src="JavaScript/timer.js"></script>
     <?php
 }
@@ -384,7 +415,9 @@ function display_answer_submit_form($PAGE){
                 </div>
             </div>
             <div class="m-form__actions">
-                <button type="submit" class="btn btn-primary" style="margin-top:10px"><?php echo get_string('submitanswer', 'mod_cluequiz') ?></button>
+                <button type="submit" class="btn btn-primary" style="margin-top:10px">
+                    <?php echo get_string('submitanswer', 'mod_cluequiz') ?>
+                </button>
                 <?php create_back_to_course_button($PAGE->course->id, false); ?>
             </div>
         </form>

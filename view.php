@@ -97,7 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['questiontext'])
     $existing_record = $DB->get_record('cluequiz_questions', array('activity_id' => $moduleinstance->id));
 
     // Retrieve existing clues from the database
-    $existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question->id));
+    if (!empty($question)) {
+        $existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question->id));
+    } else {
+        $existing_clues = array();
+    }
+
     $clueIndex = count($existing_clues);
 
     if ($existing_record) {
@@ -126,53 +131,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clue'])) {
     // Delete any clues that were removed from the form
     $existing_clue_ids = array();
     foreach ($existing_clues as $existing_clue) {
-        $found = false;
-        foreach ($clues as $key => $clue) {
-            if ($existing_clue->clue_interval == $clue['clue_interval']) {
-                $found = true;
-                $existing_clue_ids[] = $existing_clue->id; // Add the ID to the array
-                break;
-            }
-        }
-        if (!$found) {
+        if (!in_array($existing_clue->id, $clues['id'])) {
             $DB->delete_records('cluequiz_clues', array('id' => $existing_clue->id));
-
-            // Decrement the clue_interval of all remaining clues with a higher clue_interval
-            foreach ($existing_clues as $other_clue) {
-                if ($other_clue->clue_interval > $existing_clue->clue_interval) {
-                    $other_clue->clue_interval--;
-                    $DB->update_record('cluequiz_clues', $other_clue);
-                }
-            }
         }
     }
-
-    $remaining_clue_ids = array_diff(array_map(function ($clue) {
-        return $clue->id;
-    }, $existing_clues), $existing_clue_ids);
-
-    if (!empty($remaining_clue_ids)) {
-        $DB->delete_records_list('cluequiz_clues', 'id', $remaining_clue_ids);
-    }
-
-    // Reorder the clues
-    usort($clues, function ($a, $b) {
-        return $a['clue_interval'] - $b['clue_interval'];
-    });
-
-    // Insert or update the remaining clues into the table
-    foreach ($clues as $key => $clue) {
-        $data = new stdClass();
-        $data->question_id = $question_id;
-        $data->clue_text = $clue['clue_text'];
-        $data->clue_interval = $key + 1;
-
-        // Check if the clue already exists
-        $existing_clue = $DB->get_record('cluequiz_clues', array('question_id' => $question_id, 'clue_interval' => $data->clue_interval));
-        if ($existing_clue) {
-            $data->id = $existing_clue->id;
+    foreach ($clues['id'] as $key => $clue){
+        if(isset($existing_clues[$clue])){
+            $data = $existing_clues[$clue];
+            $data->clue_text = $clues['clue_text'][$key];
+            $data->clue_interval = $key + 1;
             $DB->update_record('cluequiz_clues', $data);
         } else {
+            $data = new stdClass();
+            $data->question_id = $question_id;
+            $data->clue_text = $clues['clue_text'][$key];
+            $data->clue_interval = $key + 1;
             $DB->insert_record('cluequiz_clues', $data);
         }
     }

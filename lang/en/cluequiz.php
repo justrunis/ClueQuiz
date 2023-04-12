@@ -47,7 +47,7 @@ $string['clueheader'] = 'Clues';
 $string['addmoreclues'] = 'Add more clues';
 $string['cluetext'] = 'Clue text';
 $string['clueinterval'] = 'Clue time interval';
-$string['addclue'] = 'Add another clue';
+$string['addclue'] = 'Add clue';
 $string['clue'] = 'Clue';
 $string['cluesupdated'] = 'Clues updated';
 
@@ -63,3 +63,4 @@ $string['back'] = 'Back to start';
 
 $string['correctanswer'] = 'Your answer is correct, press back to start to go back';
 $string['incorrectanswer'] = 'Your answer is inccorect, please try again';
+$string['spamtext'] = 'Sorry, you cannot submit your answer more than once in a minute. Please try again later.';
