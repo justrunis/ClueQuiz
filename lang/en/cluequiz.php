@@ -46,7 +46,6 @@ $string['questionupdated'] = 'Question updated';
 $string['clueheader'] = 'Clues';
 $string['addmoreclues'] = 'Add more clues';
 $string['cluetext'] = 'Clue text';
-$string['clueinterval'] = 'Clue time interval';
 $string['addclue'] = 'Add clue';
 $string['clue'] = 'Clue';
 $string['cluesupdated'] = 'Clues updated';
@@ -56,14 +55,15 @@ $string['remove'] = 'Remove';
 
 $string['play'] = 'Start game';
 
+$string['timertext'] = 'Time for next clue';
 $string['answerheader'] = 'Answer';
 $string['answertext'] = 'Enter your answer';
 $string['submitanswer'] = 'Submit answer';
 $string['back'] = 'Back to start';
 
 $string['correctanswer'] = 'Your answer is correct, press back to start to go back';
-$string['incorrectanswer'] = 'Your answer is inccorect, please try again';
+$string['incorrectanswer'] = 'Your answer is incorrect, please try again';
 $string['spamtext'] = 'Stop! It seems like you are submitting too many answers too quickly. Please try again in %s.';
 
-$string['noquestion'] = 'No question submited';
-$string['noanswer'] = 'No answer submited';
+$string['noquestion'] = 'No question submitted';
+$string['noanswer'] = 'No answer submitted';

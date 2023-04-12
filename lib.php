@@ -39,6 +39,32 @@ function cluequiz_supports($feature) {
     }
 }
 
+function plugin_load_language($plugin, $lang=''){
+    global $CFG, $DB, $USER;
+
+    if (empty($lang)) {
+        $lang = current_language();
+    }
+
+    // Check if user has set country to Lithuania
+    if ($USER && $USER->country == 'LT') {
+        $lt_lang = $CFG->dirroot . '/mod/yourplugin/lang/lt/' . $plugin . '.php';
+        if (file_exists($lt_lang)) {
+            require_once($lt_lang);
+            return;
+        }
+    }
+
+    // Otherwise, load the language file from the default location
+    $en_lang = $CFG->dirroot . '/mod/yourplugin/lang/en/' . $plugin . '.php';
+    if (file_exists($en_lang)) {
+        require_once($en_lang);
+    }
+}
+
+
+
+
 /**
  * Saves a new instance of the mod_cluequiz into the database.
  *
@@ -265,8 +291,7 @@ function display_clue_form($DB, $question, $CFG, $cm){
                         </label>
                         <div class="col-md-9">
                             <textarea name="clue[clue_text][]" id="id_clue<?php echo $clue_index; ?>" class="form-control"
-                            ><?php echo $existing_clue->clue_text; ?>
-                            </textarea>
+                            ><?php echo $existing_clue->clue_text ?? '' ;?></textarea>
                             <input type="hidden" name="clue[id][]" value="<?php echo $existing_clue->id; ?>">
                             <button type="button" class="btn btn-danger remove-clue mt-2" data-id="<?php echo $existing_clue->id; ?>">
                                 <?php echo get_string('remove', 'mod_cluequiz')  ?>
@@ -368,7 +393,7 @@ function display_question($question){
         $html = <<<HTML
             <div id="question-text">
                 <h3>%s</h3>
-                <p style="color: red;">%s</p>
+                <strong style="color: red;">%s</strong>
             </div>
         HTML;
         $question_header = get_string('questionheader', 'mod_cluequiz');
@@ -391,7 +416,7 @@ function display_question_clues($existing_clues, $clueCount, $time_limit){
     ?>
     <!-- Display timer -->
     <div id="timer-container">
-        <h3>Time for next clue</h3>
+        <h3><?php echo get_string('timertext', 'mod_cluequiz')?></h3>
         <span id="timer"></span>
     </div>
     <!-- Display clues -->
@@ -487,7 +512,7 @@ function display_correct_answer($question) {
         $html = <<<HTML
             <div id="answer-text">
                 <h3>%s</h3>
-                <p style="color: red;">%s</p>
+                <strong style="color: red;">%s</strong>
             </div>
         HTML;
 
