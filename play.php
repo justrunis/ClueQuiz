@@ -79,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer']) && !has_user
     foreach ($users_attempts as $attempt){
         if(time() - $attempt->timestamp <= 60){
             $_SESSION['message'] = '<div class="alert alert-danger">' . get_string('spamtext', 'mod_cluequiz') . '</div>';
+            redirect(new moodle_url('/mod/cluequiz/play.php', array('id' => $cm->id)));
             break;
         }
     }
