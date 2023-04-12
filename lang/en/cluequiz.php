@@ -63,4 +63,7 @@ $string['back'] = 'Back to start';
 
 $string['correctanswer'] = 'Your answer is correct, press back to start to go back';
 $string['incorrectanswer'] = 'Your answer is inccorect, please try again';
-$string['spamtext'] = 'Sorry, you cannot submit your answer more than once in a minute. Please try again later.';
+$string['spamtext'] = 'Stop! It seems like you are submitting too many answers too quickly. Please try again in %s.';
+
+$string['noquestion'] = 'No question submited';
+$string['noanswer'] = 'No answer submited';

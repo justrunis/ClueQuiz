@@ -29,7 +29,7 @@ require_once(__DIR__.'/lib.php');
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot.'/mod/cluequiz/lib.php');
 
-
+global $USER, $DB, $PAGE, $OUTPUT;
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
 
@@ -135,6 +135,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clue'])) {
             $DB->delete_records('cluequiz_clues', array('id' => $existing_clue->id));
         }
     }
+
+    // Update or insert to the table
     foreach ($clues['id'] as $key => $clue){
         if(isset($existing_clues[$clue])){
             $data = $existing_clues[$clue];
@@ -158,7 +160,6 @@ echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('addquestion', 'mod_cluequiz'));
 
-//$form->display();
 display_question_form($question);
 display_clue_form($DB, $question, $CFG, $cm);
 

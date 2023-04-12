@@ -212,8 +212,7 @@ function display_question_form($question){
                 </div>
                 <div class="m-form__input">
                     <textarea id="id_questiontext" name="questiontext" class="form-control alert-icon" required="required"
-                    ><?php echo !empty($question->question_text) ? $question->question_text : ''; ?>
-                    </textarea>
+                    ><?php echo $question->question_text ?? ''; ?></textarea>
                 </div>
             </div>
             <div class="m-form__row">
@@ -222,8 +221,7 @@ function display_question_form($question){
                 </div>
                 <div class="m-form__input">
                     <textarea id="id_answertext" name="answertext" class="form-control alert-icon" required="required"
-                    ><?php echo !empty($question->answer_text) ? $question->answer_text : ''; ?>
-                    </textarea>
+                    ><?php echo $question->answer_text ?? ''; ?></textarea>
                 </div>
             </div>
             <div class="m-form__row">
@@ -366,12 +364,27 @@ function display_clue_form($DB, $question, $CFG, $cm){
 }
 
 function display_question($question){
-    ?>
-    <div id="question-text">
-        <h3>Question</h3>
-        <p><?php echo $question->question_text; ?></p>
-    </div>
-    <?php
+    if (!$question) {
+        $html = <<<HTML
+            <div id="question-text">
+                <h3>%s</h3>
+                <p style="color: red;">%s</p>
+            </div>
+        HTML;
+        $question_header = get_string('questionheader', 'mod_cluequiz');
+        $no_question_text = get_string('noquestion', 'mod_cluequiz');
+        printf($html, $question_header, $no_question_text);
+    } else {
+        $html = <<<HTML
+            <div id="question-text">
+                <h3>%s</h3>
+                <p>%s</p>
+            </div>
+        HTML;
+        $question_header = get_string('questionheader', 'mod_cluequiz');
+        $question_text = $question->question_text;
+        printf($html, $question_header, $question_text);
+    }
 }
 
 function display_question_clues($existing_clues, $clueCount, $time_limit){
@@ -425,8 +438,12 @@ function display_answer_submit_form($PAGE){
     <?php
 }
 
-function has_user_answered_correct($DB, $USER, $question_id): bool {
+function has_user_answered_correct($DB, $USER, $question_id) {
     $attempts = $DB->get_records('cluequiz_attempts', array('user_id' => $USER->id));
+    // Check that $question_id is set to a number
+    if (!is_numeric($question_id)) {
+        return;
+    }
 
     foreach ($attempts as $attempt) {
         if($attempt->is_correct == 1 && $question_id == $attempt->question_id){
@@ -466,18 +483,38 @@ function write_cluequiz_user_grade($moduleInstance, $USER, $PAGE, $rawgrade){
 }
 
 function display_correct_answer($question) {
-    ?>
-    <div id="answer-text">
-        <h3>Correct answer</h3>
-        <p><?php echo $question->answer_text; ?></p>
-    </div>
-    <?php
-}
+    if (!$question) {
+        $html = <<<HTML
+            <div id="answer-text">
+                <h3>%s</h3>
+                <p style="color: red;">%s</p>
+            </div>
+        HTML;
 
+        $answer_header = get_string('answerheader', 'mod_cluequiz');
+        $no_answer_text = get_string('noanswer', 'mod_cluequiz');
+        printf($html, $answer_header, $no_answer_text);
+
+    } else {
+        $html = <<<HTML
+            <div id="answer-text">
+                <h3>%s</h3>
+                <p>%s</p>
+            </div>
+        HTML;
+        $answer_header = get_string('answerheader', 'mod_cluequiz');
+        $answer_text = $question->answer_text;
+        printf($html, $answer_header, $answer_text);
+    }
+}
 
 function create_back_to_course_button($courseid, $needCenter) {
 
     $url = new moodle_url('/course/view.php', array('id' => $courseid));
+    // Check that $courseid is set to a number
+    if (!is_numeric($courseid)) {
+        return;
+    }
 
     $style = 'margin-top:10px';
     if($needCenter){
@@ -492,4 +529,39 @@ function create_back_to_course_button($courseid, $needCenter) {
     echo html_writer::start_tag('a', $link_attributes);
     echo get_string('back', 'mod_cluequiz');
     echo html_writer::end_tag('a');
+}
+
+function check_spam($users_attempts, $cm, $cooldown){
+    // Check that $cooldown is set to a number
+    if (!is_numeric($cooldown)) {
+        return;
+    }
+
+    foreach ($users_attempts as $attempt){
+        // Check if the user has submitted an answer for this question
+        if(time() - $attempt->timestamp <= $cooldown){
+            $time_left = $cooldown - (time() - $attempt->timestamp);
+            $minutes = floor($time_left / 60);
+            $seconds = $time_left % 60;
+            $time_left_formatted = sprintf("%d min %02d sec", $minutes, $seconds);
+            $message = sprintf(get_string('spamtext', 'mod_cluequiz'), $time_left_formatted);
+            $_SESSION['message'] = '<div class="alert alert-danger">' . $message . '</div>';
+            redirect(new moodle_url('/mod/cluequiz/play.php', array('id' => $cm->id)));
+            break;
+        }
+    }
+}
+
+function message_handling($DB, $USER, $question){
+    if(!$question){
+        return;
+    }
+    if(has_user_answered_correct($DB, $USER, $question->id)){
+        echo '<div class="alert alert-success" role="alert">'.get_string('correctanswer', 'mod_cluequiz').'</div>';
+    }
+
+    if (isset($_SESSION['message'])) {
+        echo $_SESSION['message'];
+        unset($_SESSION['message']);
+    }
 }

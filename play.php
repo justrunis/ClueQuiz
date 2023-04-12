@@ -29,7 +29,7 @@ require_once(__DIR__.'/lib.php');
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot.'/mod/cluequiz/lib.php');
 
-
+global $USER, $DB, $PAGE, $OUTPUT;
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
 
@@ -66,7 +66,12 @@ $PAGE->set_context($modulecontext);
 $time_limit = $DB->get_field('cluequiz_questions', 'time_limit', array('activity_id' => $moduleinstance->id));
 $question = $DB->get_record('cluequiz_questions', array('activity_id' => $moduleinstance->id));
 
-$existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question->id));
+if($question){
+    $existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question->id));
+}
+else{
+    $existing_clues = [];
+}
 $clueCount = sizeof($existing_clues);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer']) && !has_user_answered_correct($DB, $USER, $question->id)) {
@@ -76,13 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer']) && !has_user
     $rawgrade = 100;
 
     $users_attempts = $DB->get_records('cluequiz_attempts', array('user_id' => $user_id, 'question_id' => $question_id));
-    foreach ($users_attempts as $attempt){
-        if(time() - $attempt->timestamp <= 60){
-            $_SESSION['message'] = '<div class="alert alert-danger">' . get_string('spamtext', 'mod_cluequiz') . '</div>';
-            redirect(new moodle_url('/mod/cluequiz/play.php', array('id' => $cm->id)));
-            break;
-        }
-    }
+    $cooldown = 60;
+    check_spam($users_attempts, $cm, $cooldown);
 
     // Get the user's submitted answer
     $user_answer = $_POST['answer'];
@@ -112,19 +112,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer']) && !has_user
 }
 
 echo $OUTPUT->header();
-if(has_user_answered_correct($DB, $USER, $question->id)){
-    echo '<div class="alert alert-success" role="alert">'.get_string('correctanswer', 'mod_cluequiz').'</div>';
-}
-
-if (isset($_SESSION['message'])) {
-    echo $_SESSION['message'];
-    unset($_SESSION['message']);
-}
+message_handling($DB, $USER, $question);
 
 display_question($question);
-if(!has_user_answered_correct($DB, $USER, $question->id)){
-    display_question_clues($existing_clues, $clueCount, $time_limit);
-    display_answer_submit_form($PAGE);
+if($question){
+    if(!has_user_answered_correct($DB, $USER, $question->id)){
+        display_question_clues($existing_clues, $clueCount, $time_limit);
+        display_answer_submit_form($PAGE);
+    }
+    else{
+        display_correct_answer($question);
+        create_back_to_course_button($PAGE->course->id, true);
+    }
 }
 else{
     display_correct_answer($question);
