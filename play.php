@@ -117,7 +117,7 @@ message_handling($DB, $USER, $question);
 display_question($question);
 if($question){
     if(!has_user_answered_correct($DB, $USER, $question->id)){
-        display_question_clues($existing_clues, $clueCount, $time_limit);
+        display_question_clues($existing_clues, $clueCount, $time_limit, $question);
         display_answer_submit_form($PAGE);
     }
     else{

@@ -406,7 +406,7 @@ function display_question($question){
     }
 }
 
-function display_question_clues($existing_clues, $clueCount, $time_limit){
+function display_question_clues($existing_clues, $clueCount, $time_limit, $question){
     ?>
     <!-- Display timer -->
     <div id="timer-container">
@@ -416,17 +416,17 @@ function display_question_clues($existing_clues, $clueCount, $time_limit){
     <!-- Display clues -->
     <input type="hidden" id="clueCount" value="<?php echo $clueCount; ?>">
     <input type="hidden" id="timeLimit" value="<?php echo $time_limit; ?>">
+    <input type="hidden" id="questionId" value="<?php echo $question->id; ?>">
     <div id="clues">
         <?php
         $i = 1;
         foreach ($existing_clues as $clue):
-            echo "<p style='display: none' id='clue-$clue->id'><b>" .
-                get_string('clue', 'mod_cluequiz') . " $i:</b> $clue->clue_text </p>";
+            echo "<p style='display: none' id='clue-$clue->id' data-id='$clue->id'><b>" .
+                get_string('clue', 'mod_cluequiz') . " $i:</b> <span></span></p>";
             $i++;
         endforeach;
         ?>
     </div>
-
     <script src="JavaScript/timer.js"></script>
     <?php
 }

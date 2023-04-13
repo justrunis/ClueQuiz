@@ -22,11 +22,24 @@
 
 // Get time limit from PHP and convert to milliseconds
 const timeLimitInMinutes = parseInt(document.getElementById('timeLimit').value);
+const questionId = parseInt(document.getElementById('questionId').value);
 const timeLimitInMilliseconds = timeLimitInMinutes * 60 * 1000;
 
 const allClues = document.querySelectorAll("#clues > p");
+async function fetchData(data) {
+    const response = await fetch("/mod/cluequiz/cluesrequest.php", {
+        method: 'POST',
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+    const jsonData = await response.json();
+    return jsonData;
+}
 
-// Get clue count from PHP
+// Get clue count from HTML
 const clueCount = parseInt(document.getElementById('clueCount').value);
 
 let startTime = localStorage.getItem('startTime');
@@ -43,12 +56,28 @@ function updateTimer() {
     const elapsedMilliseconds = now - startTime;
     const remainingMilliseconds = timeLimitInMilliseconds - (elapsedMilliseconds % timeLimitInMilliseconds);
 
-    const temp = Math.floor(elapsedMilliseconds / timeLimitInMilliseconds)
+    const temp = Math.floor(elapsedMilliseconds / timeLimitInMilliseconds);
     const remainingClues = clueCount - temp;
 
+    var data = {questionId : questionId, clues : []};
     for (let i = 0; i < Math.min(clueCount, temp); i++) {
-        allClues[i].style.display = 'block';
+        //allClues[i].style.display = 'block';
+
+        let id = allClues[i].getAttribute("data-id");
+        if(!allClues[i].getAttribute('data-loaded')){
+            data.clues.push(id);
+            allClues[i].setAttribute('data-loaded', true);
+        }
     }
+    fetchData(data).then(result => {
+        result.forEach(clue =>{
+            const test = document.querySelector(`#clue-${clue.id} span`)
+            test.innerHTML = clue.clue_text;
+            test.parentNode.style.display = 'block';
+
+            console.log(test);
+        });
+    });
     if (remainingClues >= 1) {
         displayTimer(remainingMilliseconds);
     } else {
