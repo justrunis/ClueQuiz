@@ -69,15 +69,19 @@ function updateTimer() {
             allClues[i].setAttribute('data-loaded', true);
         }
     }
-    fetchData(data).then(result => {
-        result.forEach(clue =>{
-            const test = document.querySelector(`#clue-${clue.id} span`)
-            test.innerHTML = clue.clue_text;
-            test.parentNode.style.display = 'block';
+    if (data.clues.length > 0){
+        console.log(data);
+        fetchData(data).then( function (result) {
+            result.forEach(function (clue){
+                const test = document.getElementById('clue-' + clue.id);
+                const span = test.querySelector('span');
+                span.innerHTML = clue.clue_text;
+                test.style.display = 'block';
 
-            console.log(test);
+                console.log(test);
+            });
         });
-    });
+    }
     if (remainingClues >= 1) {
         displayTimer(remainingMilliseconds);
     } else {
