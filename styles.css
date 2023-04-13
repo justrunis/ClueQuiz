@@ -33,6 +33,17 @@
     display: none;
 }
 
+#add-clue, #to-play {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+#save-question{
+    margin-top:10px;
+    margin-bottom: 10px;
+}
+
+
 #clue-separator{
     border: none;
     height: 2px;
@@ -75,10 +86,16 @@
 
 #question-text h3 {
     margin-bottom: 10px;
+    font-size: 1.5em;
+    font-weight: bold;
 }
 
 #question-text p {
     display: block;
+    font-size: 1.1em;
+}
+#question-text strong {
+    color: red;
 }
 #answer-text {
     display: flex;
@@ -89,10 +106,16 @@
 
 #answer-text h3 {
     margin-bottom: 10px;
+    font-size: 1.5em;
+    font-weight: bold;
 }
 
 #answer-text p {
+    font-size: 1.1em;
     display: block;
+}
+#answer-text strong {
+    color: red;
 }
 
 @media only screen and (max-width: 768px) {

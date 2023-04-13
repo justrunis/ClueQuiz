@@ -48,7 +48,7 @@ function plugin_load_language($plugin, $lang=''){
 
     // Check if user has set country to Lithuania
     if ($USER && $USER->country == 'LT') {
-        $lt_lang = $CFG->dirroot . '/mod/yourplugin/lang/lt/' . $plugin . '.php';
+        $lt_lang = $CFG->dirroot . '/mod/cluequiz/lang/lt/' . $plugin . '.php';
         if (file_exists($lt_lang)) {
             require_once($lt_lang);
             return;
@@ -56,14 +56,11 @@ function plugin_load_language($plugin, $lang=''){
     }
 
     // Otherwise, load the language file from the default location
-    $en_lang = $CFG->dirroot . '/mod/yourplugin/lang/en/' . $plugin . '.php';
+    $en_lang = $CFG->dirroot . '/mod/cluequiz/lang/en/' . $plugin . '.php';
     if (file_exists($en_lang)) {
         require_once($en_lang);
     }
 }
-
-
-
 
 /**
  * Saves a new instance of the mod_cluequiz into the database.
@@ -261,7 +258,7 @@ function display_question_form($question){
             </div>
         </div>
         <div class="m-form__actions">
-            <button type="submit" class="btn btn-success" style="margin-top:10px">
+            <button id="save-question" type="submit" class="btn btn-success">
                 <?php echo get_string('save', 'mod_cluequiz') ?>
             </button>
         </div>
@@ -304,15 +301,12 @@ function display_clue_form($DB, $question, $CFG, $cm){
         </div>
         <button type="submit" class="btn btn-success"><?php echo get_string('saveclues', 'mod_cluequiz'); ?></button>
     </form>
-    <button type="button" id="add-clue" class="btn btn-primary" style="margin-top: 10px">
+    <button type="button" id="add-clue" class="btn btn-primary">
         <?php echo get_string('addclue', 'mod_cluequiz'); ?>
     </button>
-    <a href="<?php echo $CFG->wwwroot ?>/mod/cluequiz/play.php?id=<?php echo $cm->id ?>" class="btn btn-primary" style="margin-top: 10px">
+    <a id="to-play" href="<?php echo $CFG->wwwroot ?>/mod/cluequiz/play.php?id=<?php echo $cm->id ?>" class="btn btn-primary">
         <?php echo get_string('play', 'mod_cluequiz'); ?>
     </a>
-    <input type="hidden" id="clue_index" value="<?php echo $clue_index; ?>">
-    <input type="hidden" id="remove_string" value="<?php echo $remove_string; ?>">
-    <input type="hidden" id="clueLabelString" value="<?php echo get_string('clue', 'mod_cluequiz'); ?>">
 
     <script>
         // Add more clues button functionality
@@ -393,7 +387,7 @@ function display_question($question){
         $html = <<<HTML
             <div id="question-text">
                 <h3>%s</h3>
-                <strong style="color: red;">%s</strong>
+                <strong>%s</strong>
             </div>
         HTML;
         $question_header = get_string('questionheader', 'mod_cluequiz');
@@ -512,7 +506,7 @@ function display_correct_answer($question) {
         $html = <<<HTML
             <div id="answer-text">
                 <h3>%s</h3>
-                <strong style="color: red;">%s</strong>
+                <strong>%s</strong>
             </div>
         HTML;
 
