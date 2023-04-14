@@ -142,12 +142,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clue'])) {
             $data = $existing_clues[$clue];
             $data->clue_text = $clues['clue_text'][$key];
             $data->clue_interval = $key + 1;
+            $data->clue_timer = $clues['clue_timer'][$key];
             $DB->update_record('cluequiz_clues', $data);
         } else {
             $data = new stdClass();
             $data->question_id = $question_id;
             $data->clue_text = $clues['clue_text'][$key];
             $data->clue_interval = $key + 1;
+            $data->clue_timer = $clues['clue_timer'][$key];
             $DB->insert_record('cluequiz_clues', $data);
         }
     }

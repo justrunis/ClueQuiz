@@ -89,6 +89,10 @@
     font-weight: bold;
 }
 
+div#id_questiontexteditable, div[id^="id_clue"] {
+    min-height: 200px!important;
+}
+
 #question-text p {
     display: block;
     font-size: 1.1em;

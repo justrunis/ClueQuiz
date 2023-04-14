@@ -136,5 +136,35 @@ function xmldb_cluequiz_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023040520, 'cluequiz');
     }
 
+    if ($oldversion < 2023040524) {
+
+        // Define field timer to be dropped from cluequiz_user_timer.
+        $table = new xmldb_table('cluequiz_user_timer');
+        $field = new xmldb_field('timer');
+
+        // Conditionally launch drop field timer.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Cluequiz savepoint reached.
+        upgrade_mod_savepoint(true, 2023040524, 'cluequiz');
+    }
+    if ($oldversion < 2023040530) {
+
+        // Define field clue_timer to be added to cluequiz_clues.
+        $table = new xmldb_table('cluequiz_clues');
+        $field = new xmldb_field('clue_timer', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'clue_interval');
+
+        // Conditionally launch add field clue_timer.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Cluequiz savepoint reached.
+        upgrade_mod_savepoint(true, 2023040530, 'cluequiz');
+    }
+
+
     return true;
 }
