@@ -110,5 +110,31 @@ function xmldb_cluequiz_upgrade($oldversion) {
         // Cluequiz savepoint reached.
         upgrade_mod_savepoint(true, 2023040513, 'cluequiz');
     }
+    if ($oldversion < 2023040520) {
+
+        // Define table cluequiz_user_timer to be created.
+        $table = new xmldb_table('cluequiz_user_timer');
+
+        // Adding fields to table cluequiz_user_timer.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('question_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timer', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table cluequiz_user_timer.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('user_id', XMLDB_KEY_FOREIGN, ['user_id'], 'user', ['id']);
+        $table->add_key('question_id', XMLDB_KEY_FOREIGN, ['question_id'], 'cluequiz_questions', ['id']);
+
+        // Conditionally launch create table for cluequiz_user_timer.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Cluequiz savepoint reached.
+        upgrade_mod_savepoint(true, 2023040520, 'cluequiz');
+    }
+
     return true;
 }

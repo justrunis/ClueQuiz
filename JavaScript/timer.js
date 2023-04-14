@@ -23,70 +23,29 @@
 // Get time limit from PHP and convert to milliseconds
 const timeLimitInMinutes = parseInt(document.getElementById('timeLimit').value);
 const questionId = parseInt(document.getElementById('questionId').value);
+const endMessage = document.getElementById('allcluesdisplayed');
 const timeLimitInMilliseconds = timeLimitInMinutes * 60 * 1000;
-
-const allClues = document.querySelectorAll("#clues > p");
-async function fetchData(data) {
-    const response = await fetch("/mod/cluequiz/cluesrequest.php", {
-        method: 'POST',
-        mode: "cors",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
-    const jsonData = await response.json();
-    return jsonData;
-}
 
 // Get clue count from HTML
 const clueCount = parseInt(document.getElementById('clueCount').value);
+let cluesToShow = parseInt(document.getElementById('cluesToShow').value);
 
-let startTime = localStorage.getItem('startTime');
-if(!startTime){
-    // Start timer
-    startTime = new Date().getTime();
-    localStorage.setItem('startTime', startTime);
+if(cluesToShow >= clueCount){
+    document.getElementById("timer").innerHTML = endMessage.value;
 }
-
-const timerInterval = setInterval(updateTimer, 100);
+else{
+    const timerInterval = setInterval(updateTimer, 100);
+}
 
 function updateTimer() {
     const now = new Date().getTime();
-    const elapsedMilliseconds = now - startTime;
-    const remainingMilliseconds = timeLimitInMilliseconds - (elapsedMilliseconds % timeLimitInMilliseconds);
+    const remaining = timerEnds - now;
 
-    const temp = Math.floor(elapsedMilliseconds / timeLimitInMilliseconds);
-    const remainingClues = clueCount - temp;
+    if(remaining > 0) {
+        displayTimer(remaining);
 
-    var data = {questionId : questionId, clues : []};
-    for (let i = 0; i < Math.min(clueCount, temp); i++) {
-        //allClues[i].style.display = 'block';
-
-        let id = allClues[i].getAttribute("data-id");
-        if(!allClues[i].getAttribute('data-loaded')){
-            data.clues.push(id);
-            allClues[i].setAttribute('data-loaded', true);
-        }
-    }
-    if (data.clues.length > 0){
-        console.log(data);
-        fetchData(data).then( function (result) {
-            result.forEach(function (clue){
-                const test = document.getElementById('clue-' + clue.id);
-                const span = test.querySelector('span');
-                span.innerHTML = clue.clue_text;
-                test.style.display = 'block';
-
-                console.log(test);
-            });
-        });
-    }
-    if (remainingClues >= 1) {
-        displayTimer(remainingMilliseconds);
     } else {
-        // Display final message
-        document.getElementById("timer").innerHTML = "All clues are displayed";
+        document.getElementById("refreshButton").style.display = "flex";
         clearInterval(timerInterval);
     }
 }
@@ -95,7 +54,6 @@ function displayTimer(remainingMilliseconds) {
     const hours = Math.floor((remainingMilliseconds || timeLimitInMilliseconds) / (1000 * 60 * 60));
     const minutes = Math.floor((remainingMilliseconds || timeLimitInMilliseconds) % (1000 * 60 * 60) / (1000 * 60));
     const seconds = Math.floor(((remainingMilliseconds || timeLimitInMilliseconds) % (1000 * 60)) / 1000);
-    // console.error( remainingMilliseconds);
     document.getElementById("timer").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
     document.getElementById("timer").style.display = "block";
 }

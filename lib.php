@@ -406,7 +406,17 @@ function display_question($question){
     }
 }
 
-function display_question_clues($existing_clues, $clueCount, $time_limit, $question){
+function display_question_clues($existing_clues, $clueCount, $time_limit, $question, $user_timer){
+    $user_time = $user_timer->timemodified;
+    $given_time = $question->time_limit * 60;
+
+    $elapsed_time = time() - $user_time;
+    $remainingTime = $given_time - ($elapsed_time % $given_time);
+
+    $timer_ends = time() + $remainingTime;
+
+    $clues_to_show = floor($elapsed_time / $given_time);
+
     ?>
     <!-- Display timer -->
     <div id="timer-container">
@@ -415,18 +425,31 @@ function display_question_clues($existing_clues, $clueCount, $time_limit, $quest
     </div>
     <!-- Display clues -->
     <input type="hidden" id="clueCount" value="<?php echo $clueCount; ?>">
+    <input type="hidden" id="cluesToShow" value="<?php echo $clues_to_show; ?>">
     <input type="hidden" id="timeLimit" value="<?php echo $time_limit; ?>">
     <input type="hidden" id="questionId" value="<?php echo $question->id; ?>">
+    <input type="hidden" id="allcluesdisplayed" value="<?php echo get_string('allcluesdisplayed', 'mod_cluequiz'); ?>">
+    <button class="btn btn-primary" style="display:none; margin: auto" id="refreshButton" type="hidden" onClick="refresh(this)">
+        <?php echo get_string('nextclue', 'mod_cluequiz')?>
+    </button>
     <div id="clues">
         <?php
-        $i = 1;
-        foreach ($existing_clues as $clue):
-            echo "<p style='display: none' id='clue-$clue->id' data-id='$clue->id'><b>" .
-                get_string('clue', 'mod_cluequiz') . " $i:</b> <span></span></p>";
-            $i++;
-        endforeach;
+        $index = 1;
+        $existing_clues = array_values($existing_clues);
+        for($i = 0; $i < min($clues_to_show, count($existing_clues)); $i++){
+            echo "<p  id='clue-{$existing_clues[$i]->id}' data-id='{$existing_clues[$i]->id}'><b>" .
+                get_string('clue', 'mod_cluequiz') . " $index:</b> <span>{$existing_clues[$i]->clue_text}</span></p>";
+            $index++;
+        }
         ?>
     </div>
+    <script>
+        let timerEnds = '<?php echo  $timer_ends * 1000?>';
+
+        function refresh(){
+            window.location.reload("Refresh")
+        }
+    </script>
     <script src="JavaScript/timer.js"></script>
     <?php
 }

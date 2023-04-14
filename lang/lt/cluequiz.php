@@ -56,6 +56,8 @@ $string['remove'] = 'Pašalinti';
 $string['play'] = 'Pradėti žaidimą';
 
 $string['timertext'] = 'Laikas iki sekančios užuominos';
+$string['nextclue'] = 'Rodyti sekančią užuominą';
+$string['allcluesdisplayed'] = 'Pateiktos visos užuominos';
 $string['answerheader'] = 'Atsakymas';
 $string['answertext'] = 'Įveskite savo atsakymą';
 $string['submitanswer'] = 'Pateikti atsakymą';

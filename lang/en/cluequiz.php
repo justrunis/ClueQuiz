@@ -56,6 +56,8 @@ $string['remove'] = 'Remove';
 $string['play'] = 'Start game';
 
 $string['timertext'] = 'Time for next clue';
+$string['nextclue'] = 'Show next clue';
+$string['allcluesdisplayed'] = 'All clues are displayed';
 $string['answerheader'] = 'Answer';
 $string['answertext'] = 'Enter your answer';
 $string['submitanswer'] = 'Submit answer';

@@ -68,6 +68,17 @@ $question = $DB->get_record('cluequiz_questions', array('activity_id' => $module
 
 if($question){
     $existing_clues = $DB->get_records('cluequiz_clues', array('question_id' => $question->id));
+    $user_timer = $DB->get_record('cluequiz_user_timer', array('question_id' => $question->id));
+    if(!$user_timer){
+        $data = array(
+            'user_id' => $USER->id,
+            'question_id' => $question->id,
+            'timer' => $time_limit * 60, // refactor to seconds
+            'timemodified' => time()
+        );
+        $DB->insert_record('cluequiz_user_timer', $data);
+        $user_timer = (object) $data;
+    }
 }
 else{
     $existing_clues = [];
@@ -117,8 +128,9 @@ message_handling($DB, $USER, $question);
 display_question($question);
 if($question){
     if(!has_user_answered_correct($DB, $USER, $question->id)){
-        display_question_clues($existing_clues, $clueCount, $time_limit, $question);
+        display_question_clues($existing_clues, $clueCount, $time_limit, $question, $user_timer);
         display_answer_submit_form($PAGE);
+        //user_timer($user_timer);
     }
     else{
         display_correct_answer($question);
