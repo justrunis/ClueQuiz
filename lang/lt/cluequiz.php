@@ -48,6 +48,8 @@ $string['addmoreclues'] = 'Pridėti daugiau užuominų';
 $string['cluetext'] = 'Užuominos tekstas';
 $string['addclue'] = 'Pridėti užuominą';
 $string['clue'] = 'Užuomina';
+$string['invalidnumbermessage'] = 'Įveskite sveiką skaičių';
+$string['moreoptions'] = 'Detalesnis užuominų langas';
 $string['cluesupdated'] = 'Sėkmingai atnaujintos užuominos';
 
 $string['saveclues'] = 'Išsaugoti užuominas';

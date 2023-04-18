@@ -231,6 +231,7 @@ function display_question_form($question){
     <form method="post" class="mod_cluequiz_question_form m-form">
         <div class="m-form__section">
             <h3 class="m-form__heading"><?php echo get_string('questionheader', 'mod_cluequiz') ?></h3>
+            <br>
             <div class="m-form__row">
                 <div class="m-form__label">
                     <label for="id_questiontext"><?php echo get_string('questiontext', 'mod_cluequiz') ?></label>
@@ -241,21 +242,13 @@ function display_question_form($question){
                 </div>
             </div>
             <div class="m-form__row">
+                <br>
                 <div class="m-form__label">
                     <label for="id_answertext"><?php echo get_string('questionanswertext', 'mod_cluequiz') ?></label>
                 </div>
                 <div class="m-form__input">
                     <textarea id="id_answertext" name="answertext" class="form-control alert-icon" required="required"
                     ><?php echo $question->answer_text ?? ''; ?></textarea>
-                </div>
-            </div>
-            <div class="m-form__row">
-                <div class="m-form__label">
-                    <label for="id_timeamount"><?php echo get_string('timeamount', 'mod_cluequiz') ?></label>
-                </div>
-                <div class="m-form__input">
-                    <input id="id_timeamount" name="timeamount" class="form-control alert-icon" required="required" type="number"
-                           value="<?php echo !empty($question->time_limit) ? $question->time_limit : ''; ?>">
                 </div>
             </div>
         </div>
@@ -295,8 +288,11 @@ function display_clue_form($DB, $question, $CFG, $cm){
                             <textarea name="clue[clue_text][]" id="id_clue<?php echo $clue_index; ?>" class="form-control"
                             ><?php echo $existing_clue->clue_text ?? '' ;?></textarea>
                             <label><?php echo get_string('timeamount', 'mod_cluequiz')?></label>
-                            <textarea name="clue[clue_timer][]" id="id_clue<?php echo $clue_index; ?>" class="form-control"
-                            ><?php echo $existing_clue->clue_timer ?? '' ;?></textarea>
+                            <input name="clue[clue_timer][]" id="id_clue<?php echo $clue_index; ?>" class="form-control"
+                                   type="number" value="<?php echo $existing_clue->clue_timer ?? ''; ?>"
+                                   oninvalid="setCustomValidity(<?php echo get_string('invalidnumbermessage', 'mod_cluequiz') ?>)"
+                                   onchange="try{setCustomValidity('')}catch(e){}" />
+
                             <input type="hidden" name="clue[id][]" value="<?php echo $existing_clue->id; ?>">
                             <button type="button" class="btn btn-danger remove-clue mt-2" data-id="<?php echo $existing_clue->id; ?>">
                                 <?php echo get_string('remove', 'mod_cluequiz')  ?>
@@ -308,7 +304,7 @@ function display_clue_form($DB, $question, $CFG, $cm){
             ?>
         </div>
         <button type="submit" class="btn btn-success"><?php echo get_string('saveclues', 'mod_cluequiz'); ?></button>
-        <button type="submit" class="btn btn-warning"><?php echo 'More options' ?></button>
+        <button type="submit" class="btn btn-warning"><?php echo get_string('moreoptions', 'mod_cluequiz'); ?></button>
     </form>
     <button type="button" id="add-clue" class="btn btn-primary">
         <?php echo get_string('addclue', 'mod_cluequiz'); ?>
@@ -379,10 +375,17 @@ function display_clue_form($DB, $question, $CFG, $cm){
             label.textContent = '<?php echo get_string('timeamount', 'mod_cluequiz')?>';
             clueInput.appendChild(label);
 
-            var timetextarea = document.createElement('textarea');
+            var timetextarea = document.createElement('input');
             timetextarea.setAttribute('name', 'clue[clue_timer][]');
             timetextarea.setAttribute('id', 'id_clue' + clueIndex);
             timetextarea.setAttribute('class', 'form-control');
+            timetextarea.setAttribute('type', 'number');
+            timetextarea.addEventListener('invalid', function(event) {
+                event.target.setCustomValidity('Please enter a valid number.');
+            });
+            timetextarea.addEventListener('input', function(event) {
+                event.target.setCustomValidity('');
+            });
             clueInput.appendChild(timetextarea);
 
             var removeBtn = document.createElement('button');
@@ -395,6 +398,9 @@ function display_clue_form($DB, $question, $CFG, $cm){
                 updateTitles()
                 clueIndex--;
             });
+
+            var moreoptionsBtn = document.createElemt('button');
+
             clueInput.appendChild(removeBtn);
 
             clueField.appendChild(clueInput);

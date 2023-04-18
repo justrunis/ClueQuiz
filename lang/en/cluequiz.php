@@ -48,6 +48,8 @@ $string['addmoreclues'] = 'Add more clues';
 $string['cluetext'] = 'Clue text';
 $string['addclue'] = 'Add clue';
 $string['clue'] = 'Clue';
+$string['invalidnumbermessage'] = 'Please enter a whole number';
+$string['moreoptions'] = 'More clue options';
 $string['cluesupdated'] = 'Clues updated';
 
 $string['saveclues'] = 'Save clues';

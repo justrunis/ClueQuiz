@@ -91,7 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['questiontext'])
     $data->activity_id = $moduleinstance->id;
     $data->question_text = $_POST['questiontext'];
     $data->answer_text = $_POST['answertext'];
-    $data->time_limit = $_POST['timeamount'];
 
     // Check if there is already a record for this activity
     $existing_record = $DB->get_record('cluequiz_questions', array('activity_id' => $moduleinstance->id));
