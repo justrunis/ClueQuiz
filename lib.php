@@ -293,9 +293,10 @@ function display_clue_form($DB, $question, $CFG, $cm){
                                    oninvalid="setCustomValidity(<?php echo get_string('invalidnumbermessage', 'mod_cluequiz') ?>)"
                                    onchange="try{setCustomValidity('')}catch(e){}" />
                             <input type="hidden" name="clue[id][]" value="<?php echo $existing_clue->id; ?>">
-                            <button type="submit" class="btn btn-danger mt-2" name="remove-clue" value="<?php echo $existing_clue->id; ?>">
-                                <?php echo get_string('remove', 'mod_cluequiz')  ?>
+                            <button type="submit" class="btn btn-danger mt-2" name="remove-clue" value="<?php echo $existing_clue->id; ?>" onclick="return confirm('Are you sure you want to delete this clue?')">
+                                <?php echo get_string('remove', 'mod_cluequiz') ?>
                             </button>
+
                         </div>
                     </div>
                 <?php $clue_index++;endif;
@@ -314,31 +315,7 @@ function display_clue_form($DB, $question, $CFG, $cm){
         </a>
     </form>
 
-    <script>
-        // Add an event listener to the document that listens for a click on any button with the "remove-clue" class
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('remove-clue')) {
-                const clueId = e.target.dataset.id;
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', 'cluesrequest.php');
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            const clueDiv = document.querySelector(`#clue-${clueId}`);
-                            clueDiv.remove();
-                        } else {
-                            console.log(response.error);
-                        }
-                    }
-                };
-                xhr.send(`action=remove&clue_id=${clueId}`);
-            }
-        });
 
-
-    </script>
     <?php
 }
 
