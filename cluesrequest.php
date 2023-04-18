@@ -22,34 +22,25 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require(__DIR__.'/../../config.php');
-require_once(__DIR__.'/lib.php');
 
-global $DB;
-$data = file_get_contents("php://input");
-$data = json_decode($data);
-$questionId = $data->questionId;
-$allCluesIds = array();
-foreach ($data->clues as $clue){
-    $allCluesIds[] = $clue;
+global $DB, $PAGE;
+require_once(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php'); // Include Moodle configuration file
+
+// Check that the request method is POST
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Check that the request is coming from a logged-in user
+    require_login();
+
+    // Get the ID of the clue to remove
+    $id = required_param('id', PARAM_INT);
+
+    // Delete the clue from the database
+    $DB->delete_records('cluequiz_clues', array('id' => $id));
+
+    // Send a success response
+    header('Content-Type: application/json');
+    echo json_encode(array('success' => true));
+} else {
+    // Send a 404 response if the request method is not POST
+    http_response_code(404);
 }
-$allClues = $DB->get_records('cluequiz_clues', array('question_id' => $questionId));
-
-// Create array for all clues that need to show
-$retrievedClues = [];
-
-foreach ($allClues as $clue) {
-    if (in_array($clue->id, $allCluesIds)) {
-        $retrievedClues[] = $clue;
-    }
-}
-
-// Encode the $retrievedClues array as a JSON string
-echo json_encode($retrievedClues);
-
-
-// Append the $cluesJson string as a parameter to the URL of the target PHP file
-//$targetUrl = '/mod/cluequiz/play.php?clues=' . urlencode($cluesJson);
-
-// Redirect the user to the target PHP file
-//header('Location: ' . $targetUrl);
-exit();

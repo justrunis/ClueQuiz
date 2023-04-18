@@ -119,6 +119,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['questiontext'])
     redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add-clue'])) {
+    $clue_index = $_POST['add-clue'];
+
+    $data = array(
+        'clue_text' => '',
+        'clue_interval' => $_POST['add-clue'],
+        'question_id' => $question->id,
+        'clue_timer' => 0,
+    );
+    $DB->insert_record('cluequiz_clues', $data);
+    $message = 'Clue added';
+    redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['remove-clue'])) {
+    $clueid = $_POST['remove-clue'];
+    $DB->delete_records('cluequiz_clues', ['id' => $clueid]);
+
+    $message = 'Clue removed';
+    redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
+}
+
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clue'])) {
     // Get the form data
     $question_id = $question->id;

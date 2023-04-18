@@ -284,7 +284,7 @@ function display_clue_form($DB, $question, $CFG, $cm){
                             <?php echo get_string('clue', 'mod_cluequiz') . ' ' . $clue_index; ?>
                         </label>
                         <div class="col-md-9">
-                            <label>Clue text</label>
+                            <label><?php echo get_string('cluetext', 'mod_cluequiz') ?></label>
                             <textarea name="clue[clue_text][]" id="id_clue<?php echo $clue_index; ?>" class="form-control"
                             ><?php echo $existing_clue->clue_text ?? '' ;?></textarea>
                             <label><?php echo get_string('timeamount', 'mod_cluequiz')?></label>
@@ -292,9 +292,8 @@ function display_clue_form($DB, $question, $CFG, $cm){
                                    type="number" value="<?php echo $existing_clue->clue_timer ?? ''; ?>"
                                    oninvalid="setCustomValidity(<?php echo get_string('invalidnumbermessage', 'mod_cluequiz') ?>)"
                                    onchange="try{setCustomValidity('')}catch(e){}" />
-
                             <input type="hidden" name="clue[id][]" value="<?php echo $existing_clue->id; ?>">
-                            <button type="button" class="btn btn-danger remove-clue mt-2" data-id="<?php echo $existing_clue->id; ?>">
+                            <button type="submit" class="btn btn-danger mt-2" name="remove-clue" value="<?php echo $existing_clue->id; ?>">
                                 <?php echo get_string('remove', 'mod_cluequiz')  ?>
                             </button>
                         </div>
@@ -304,109 +303,41 @@ function display_clue_form($DB, $question, $CFG, $cm){
             ?>
         </div>
         <button type="submit" class="btn btn-success"><?php echo get_string('saveclues', 'mod_cluequiz'); ?></button>
-        <button type="submit" class="btn btn-warning"><?php echo get_string('moreoptions', 'mod_cluequiz'); ?></button>
     </form>
-    <button type="button" id="add-clue" class="btn btn-primary">
-        <?php echo get_string('addclue', 'mod_cluequiz'); ?>
-    </button>
-    <a id="to-play" href="<?php echo $CFG->wwwroot ?>/mod/cluequiz/play.php?id=<?php echo $cm->id ?>" class="btn btn-primary">
-        <?php echo get_string('play', 'mod_cluequiz'); ?>
-    </a>
+    <form id="clue-form" method="post">
+        <input type="hidden" name="add-clue" value="<?php echo $clue_index; ?>">
+        <button type="submit" id="add-clue" class="btn btn-primary">
+            <?php echo get_string('addclue', 'mod_cluequiz'); ?>
+        </button>
+        <a id="to-play" href="<?php echo $CFG->wwwroot ?>/mod/cluequiz/play.php?id=<?php echo $cm->id ?>" class="btn btn-primary">
+            <?php echo get_string('play', 'mod_cluequiz'); ?>
+        </a>
+    </form>
 
     <script>
-        // Add more clues button functionality
-        var addClueBtn = document.querySelector('#add-clue');
-        var removeBtn = document.querySelectorAll('.remove-clue');
-        var clueContainer = document.querySelector('#clues-container');
-        var clueIndex =  '<?php echo $clue_index - 1 ?>';
-        var removeString = '<?php echo $remove_string ?>';
-        var cluetext = '<?php echo get_string('clue', 'mod_cluequiz') ?>';
-
-        removeBtn.forEach(x => {
-                x.addEventListener('click', function() {
-                    x.parentNode.parentNode.remove();
-                    updateTitles();
-                });
-            });
-
-        function updateTitles(){
-            let clues = document.querySelectorAll('.clue');
-            let index = 0;
-            clues.forEach((x =>{
-                index++;
-                let label = x.querySelector('label');
-                label.innerHTML = cluetext + ' ' + index;
-            }));
-        }
-
-        addClueBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            clueIndex++;
-
-            // Create the clue field
-            var clueField = document.createElement('div');
-            clueField.classList.add('form-group', 'row', 'clue');
-
-            var clueIntervalInput = document.createElement('input');
-            clueIntervalInput.setAttribute('type', 'hidden');
-            clueIntervalInput.setAttribute('name', 'clue[id][]');
-            clueField.appendChild(clueIntervalInput);
-
-            var clueLabel = document.createElement('label');
-            clueLabel.setAttribute('for', 'id_clue' + clueIndex);
-            clueLabel.classList.add('col-md-3', 'col-form-label', 'd-flex', 'pb-0', 'pr-md-0');
-            clueLabel.innerHTML = '<?php echo get_string('clue', 'mod_cluequiz'); ?> ' + clueIndex;
-            clueField.appendChild(clueLabel);
-
-            var clueInput = document.createElement('div');
-            clueInput.classList.add('col-md-9');
-
-            var label = document.createElement('label');
-            label.textContent = '<?php echo 'Clue text' ?>';
-            clueInput.appendChild(label);
-
-            var texttextarea = document.createElement('textarea');
-            texttextarea.setAttribute('name', 'clue[clue_text][]');
-            texttextarea.setAttribute('id', 'id_clue' + clueIndex);
-            texttextarea.setAttribute('class', 'form-control');
-            clueInput.appendChild(texttextarea);
-
-            var label = document.createElement('label');
-            label.textContent = '<?php echo get_string('timeamount', 'mod_cluequiz')?>';
-            clueInput.appendChild(label);
-
-            var timetextarea = document.createElement('input');
-            timetextarea.setAttribute('name', 'clue[clue_timer][]');
-            timetextarea.setAttribute('id', 'id_clue' + clueIndex);
-            timetextarea.setAttribute('class', 'form-control');
-            timetextarea.setAttribute('type', 'number');
-            timetextarea.addEventListener('invalid', function(event) {
-                event.target.setCustomValidity('Please enter a valid number.');
-            });
-            timetextarea.addEventListener('input', function(event) {
-                event.target.setCustomValidity('');
-            });
-            clueInput.appendChild(timetextarea);
-
-            var removeBtn = document.createElement('button');
-            removeBtn.classList.add('btn', 'btn-danger', 'mt-2');
-            removeBtn.setAttribute('type', 'button');
-            removeBtn.setAttribute('id', 'remove-clue-' + clueIndex);
-            removeBtn.innerHTML = removeString;
-            removeBtn.addEventListener('click', function() {
-                clueField.remove();
-                updateTitles()
-                clueIndex--;
-            });
-
-            var moreoptionsBtn = document.createElemt('button');
-
-            clueInput.appendChild(removeBtn);
-
-            clueField.appendChild(clueInput);
-            clueContainer.appendChild(clueField);
-            updateTitles()
+        // Add an event listener to the document that listens for a click on any button with the "remove-clue" class
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-clue')) {
+                const clueId = e.target.dataset.id;
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'cluesrequest.php');
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            const clueDiv = document.querySelector(`#clue-${clueId}`);
+                            clueDiv.remove();
+                        } else {
+                            console.log(response.error);
+                        }
+                    }
+                };
+                xhr.send(`action=remove&clue_id=${clueId}`);
+            }
         });
+
+
     </script>
     <?php
 }
