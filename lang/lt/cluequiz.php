@@ -51,9 +51,12 @@ $string['clue'] = 'Užuomina';
 $string['invalidnumbermessage'] = 'Įveskite sveiką skaičių';
 $string['moreoptions'] = 'Detalesnis užuominų langas';
 $string['cluesupdated'] = 'Sėkmingai atnaujintos užuominos';
+$string['clueadded'] = 'Sėkimingai pridėta užuomina';
+$string['clueremoved'] = 'Sėkmingai pašalinta užuomina';
 
 $string['saveclues'] = 'Išsaugoti užuominas';
 $string['remove'] = 'Pašalinti';
+$string['removeconfirmation'] = 'Ar tikrai norite pašalinti šią užuominą?';
 
 $string['play'] = 'Pradėti žaidimą';
 

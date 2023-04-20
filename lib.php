@@ -293,10 +293,10 @@ function display_clue_form($DB, $question, $CFG, $cm){
                                    oninvalid="setCustomValidity(<?php echo get_string('invalidnumbermessage', 'mod_cluequiz') ?>)"
                                    onchange="try{setCustomValidity('')}catch(e){}" />
                             <input type="hidden" name="clue[id][]" value="<?php echo $existing_clue->id; ?>">
-                            <button type="submit" class="btn btn-danger mt-2" name="remove-clue" value="<?php echo $existing_clue->id; ?>" onclick="return confirm('Are you sure you want to delete this clue?')">
+                            <button type="submit" class="btn btn-danger mt-2" name="remove-clue" value="<?php echo $existing_clue->id; ?>"
+                                    onclick="return confirm('<?php echo get_string('removeconfirmation', 'mod_cluequiz') ?>');">
                                 <?php echo get_string('remove', 'mod_cluequiz') ?>
                             </button>
-
                         </div>
                     </div>
                 <?php $clue_index++;endif;

@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add-clue'])) {
         'clue_timer' => 0,
     );
     $DB->insert_record('cluequiz_clues', $data);
-    $message = 'Clue added';
+    $message = get_string('clueadded', 'mod_cluequiz');
     redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['remove-clue'])) {
     $clueid = $_POST['remove-clue'];
     $DB->delete_records('cluequiz_clues', ['id' => $clueid]);
 
-    $message = 'Clue removed';
+    $message = get_string('clueremoved', 'mod_cluequiz');
     redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
 }
 

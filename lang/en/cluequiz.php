@@ -51,9 +51,12 @@ $string['clue'] = 'Clue';
 $string['invalidnumbermessage'] = 'Please enter a whole number';
 $string['moreoptions'] = 'More clue options';
 $string['cluesupdated'] = 'Clues updated';
+$string['clueadded'] = 'Clue added';
+$string['clueremoved'] = 'Clue removed';
 
 $string['saveclues'] = 'Save clues';
 $string['remove'] = 'Remove';
+$string['removeconfirmation'] = 'Are you sure you want to remove this clue?';
 
 $string['play'] = 'Start game';
 
