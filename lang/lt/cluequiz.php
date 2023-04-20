@@ -52,6 +52,7 @@ $string['invalidnumbermessage'] = 'Įveskite sveiką skaičių';
 $string['moreoptions'] = 'Detalesnis užuominų langas';
 $string['cluesupdated'] = 'Sėkmingai atnaujintos užuominos';
 $string['clueadded'] = 'Sėkimingai pridėta užuomina';
+$string['clueaddederror'] = 'Negalima pridėti užuominos jei nėra klausimo';
 $string['clueremoved'] = 'Sėkmingai pašalinta užuomina';
 
 $string['saveclues'] = 'Išsaugoti užuominas';

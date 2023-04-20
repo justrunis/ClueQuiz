@@ -120,17 +120,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['questiontext'])
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add-clue'])) {
-    $clue_index = $_POST['add-clue'];
+    if(!$question){
+        $message = get_string('clueaddederror', 'mod_cluequiz');
+        redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_ERROR);
+    }
+    else{
+        $clue_index = $_POST['add-clue'];
 
-    $data = array(
-        'clue_text' => '',
-        'clue_interval' => $_POST['add-clue'],
-        'question_id' => $question->id,
-        'clue_timer' => 0,
-    );
-    $DB->insert_record('cluequiz_clues', $data);
-    $message = get_string('clueadded', 'mod_cluequiz');
-    redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
+        $data = array(
+            'clue_text' => '',
+            'clue_interval' => $_POST['add-clue'],
+            'question_id' => $question->id,
+            'clue_timer' => 0,
+        );
+        $DB->insert_record('cluequiz_clues', $data);
+        $message = get_string('clueadded', 'mod_cluequiz');
+        redirect($PAGE->url, $message, null, \core\output\notification::NOTIFY_SUCCESS);
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['remove-clue'])) {

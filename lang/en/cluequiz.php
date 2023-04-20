@@ -52,6 +52,7 @@ $string['invalidnumbermessage'] = 'Please enter a whole number';
 $string['moreoptions'] = 'More clue options';
 $string['cluesupdated'] = 'Clues updated';
 $string['clueadded'] = 'Clue added';
+$string['clueaddederror'] = 'Cannot add clue if there is no question';
 $string['clueremoved'] = 'Clue removed';
 
 $string['saveclues'] = 'Save clues';
