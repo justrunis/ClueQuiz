@@ -39,29 +39,6 @@ function cluequiz_supports($feature) {
     }
 }
 
-function plugin_load_language($plugin, $lang=''){
-    global $CFG, $DB, $USER;
-
-    if (empty($lang)) {
-        $lang = current_language();
-    }
-
-    // Check if user has set country to Lithuania
-    if ($USER && $USER->country == 'LT') {
-        $lt_lang = $CFG->dirroot . '/mod/cluequiz/lang/lt/' . $plugin . '.php';
-        if (file_exists($lt_lang)) {
-            require_once($lt_lang);
-            return;
-        }
-    }
-
-    // Otherwise, load the language file from the default location
-    $en_lang = $CFG->dirroot . '/mod/cluequiz/lang/en/' . $plugin . '.php';
-    if (file_exists($en_lang)) {
-        require_once($en_lang);
-    }
-}
-
 /**
  * Saves a new instance of the mod_cluequiz into the database.
  *
@@ -343,8 +320,7 @@ function display_question($question){
     }
 }
 
-function display_question_clues($existing_clues, $clueCount, $time_limit, $question, $user_timer){
-
+function calculate_timer($user_timer, $existing_clues){
     $clues_to_show = 0;
     $given_time = 0;
     $user_time = $user_timer->timemodified;
@@ -367,7 +343,14 @@ function display_question_clues($existing_clues, $clueCount, $time_limit, $quest
         $remainingTime = $given_time - ($elapsed_time % $given_time);
     }
     $timer_ends = time() + $remainingTime;
+    return [$clues_to_show, $timer_ends];
+}
 
+function display_question_clues($existing_clues, $clueCount, $time_limit, $question, $user_timer){
+
+    $timer_data = calculate_timer($user_timer, $existing_clues);
+    $clues_to_show = $timer_data[0];
+    $timer_ends = $timer_data[1];
     ?>
     <!-- Display timer -->
     <div id="timer-container">
@@ -527,7 +510,7 @@ function create_back_to_course_button($courseid, $needCenter) {
 function check_spam($users_attempts, $cm, $cooldown){
     // Check that $cooldown is set to a number
     if (!is_numeric($cooldown)) {
-        return;
+        return false;
     }
 
     foreach ($users_attempts as $attempt){
@@ -539,10 +522,10 @@ function check_spam($users_attempts, $cm, $cooldown){
             $time_left_formatted = sprintf("%d min %02d sec", $minutes, $seconds);
             $message = sprintf(get_string('spamtext', 'mod_cluequiz'), $time_left_formatted);
             $_SESSION['message'] = '<div class="alert alert-danger">' . $message . '</div>';
-            redirect(new moodle_url('/mod/cluequiz/play.php', array('id' => $cm->id)));
-            break;
+            return true;
         }
     }
+    return false;
 }
 
 function message_handling($DB, $USER, $question){

@@ -73,5 +73,8 @@ $string['correctanswer'] = 'Your answer is correct, press back to start to go ba
 $string['incorrectanswer'] = 'Your answer is incorrect, please try again';
 $string['spamtext'] = 'Stop! It seems like you are submitting too many answers too quickly. Please try again in %s.';
 
+$string['invalidinputparameters'] = 'Invalid input parameters';
+$string['invalidgradevalue'] = 'Invalid grade value';
+
 $string['noquestion'] = 'No question submitted';
 $string['noanswer'] = 'No answer submitted';

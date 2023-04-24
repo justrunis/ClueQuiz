@@ -73,5 +73,8 @@ $string['correctanswer'] = 'Jūsų atsakymas teisingas. Norėdami grįžti atgal
 $string['incorrectanswer'] = 'Jūsų atsakymas neteisingas, bandykite dar kartą';
 $string['spamtext'] = 'Stop! Atrodo kad per greitai pateikiate per daug atsakymų. Bandykite dar kartą už %s.';
 
+$string['invalidinputparameters'] = 'Netinkami įvesties parametrai';
+$string['invalidgradevalue'] = 'Netinkama pažymio reikšmė';
+
 $string['noquestion'] = 'Klausimas nepateiktas';
 $string['noanswer'] = 'Atsakymas nepateiktas';

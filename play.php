@@ -93,7 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer']) && !has_user
 
     $users_attempts = $DB->get_records('cluequiz_attempts', array('user_id' => $user_id, 'question_id' => $question_id));
     $cooldown = 60;
-    check_spam($users_attempts, $cm, $cooldown);
+    $isSpam = check_spam($users_attempts, $cm, $cooldown);
+    if($isSpam){
+        redirect(new moodle_url('/mod/cluequiz/play.php', array('id' => $cm->id)));
+    }
 
     // Get the user's submitted answer
     $user_answer = $_POST['answer'];
