@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer']) && !has_user
     // Check if the user's answer is correct
     if(strtolower(str_replace(' ', '', $user_answer)) == strtolower(str_replace(' ', '', $correct_answer))){
         $is_correct = 1;
-        write_cluequiz_user_grade($moduleinstance, $USER, $PAGE, $rawgrade);
+        write_cluequiz_user_grade($moduleinstance, $USER, $PAGE, $rawgrade, $CFG);
     }
     else{
         $is_correct = 0;

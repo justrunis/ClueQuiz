@@ -85,7 +85,7 @@ if ($formdata = $form->get_data()) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['questiontext'])
-    && isset($_POST['answertext']) && isset($_POST['timeamount'])) {
+    && isset($_POST['answertext'])) {
     // Get the form data
     $data = new stdClass();
     $data->activity_id = $moduleinstance->id;

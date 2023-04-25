@@ -22,6 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 /**
  * Return if the plugin supports $feature.
  *
@@ -429,7 +430,8 @@ function has_user_answered_correct($DB, $USER, $question_id) {
     return false;
 }
 
-function write_cluequiz_user_grade($moduleInstance, $USER, $PAGE, $rawgrade){
+function write_cluequiz_user_grade($moduleInstance, $USER, $PAGE, $rawgrade, $CFG){
+    require_once($CFG->dirroot . '\lib\gradelib.php');
 
     if (!is_object($moduleInstance) || !is_object($USER) || !is_object($PAGE)) {
         throw new InvalidArgumentException(get_string('invalidinputparameters','mod_cluequiz'));
