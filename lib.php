@@ -215,7 +215,7 @@ function display_question_form($question){
                     <label for="id_questiontext"><?php echo get_string('questiontext', 'mod_cluequiz') ?></label>
                 </div>
                 <div class="m-form__input">
-                    <textarea style="height: 50px" id="id_questiontext" name="questiontext" class="form-control alert-icon" required="required"
+                    <textarea style="height: 50px" id="id_questiontext" name="questiontext" class="form-control alert-icon"
                     ><?php echo $question->question_text ?? ''; ?></textarea>
                 </div>
             </div>
@@ -225,7 +225,7 @@ function display_question_form($question){
                     <label for="id_answertext"><?php echo get_string('questionanswertext', 'mod_cluequiz') ?></label>
                 </div>
                 <div class="m-form__input">
-                    <textarea id="id_answertext" name="answertext" class="form-control alert-icon" required="required"
+                    <textarea id="id_answertext" name="answertext" class="form-control alert-icon"
                     ><?php echo $question->answer_text ?? ''; ?></textarea>
                 </div>
             </div>
@@ -373,7 +373,7 @@ function display_question_clues($existing_clues, $clueCount, $time_limit, $quest
         $existing_clues = array_values($existing_clues);
         for($i = 0; $i < min($clues_to_show, count($existing_clues)); $i++){
             echo "<p  id='clue-{$existing_clues[$i]->id}' data-id='{$existing_clues[$i]->id}'><b>" .
-                get_string('clue', 'mod_cluequiz') . " $index:</b> <span>{$existing_clues[$i]->clue_text}</span></p>";
+                get_string('clue', 'mod_cluequiz') . " $index:</b></p> <span>{$existing_clues[$i]->clue_text}</span>";
             $index++;
         }
         ?>
@@ -431,7 +431,7 @@ function has_user_answered_correct($DB, $USER, $question_id) {
 }
 
 function write_cluequiz_user_grade($moduleInstance, $USER, $PAGE, $rawgrade, $CFG){
-    require_once($CFG->dirroot . '\lib\gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
     if (!is_object($moduleInstance) || !is_object($USER) || !is_object($PAGE)) {
         throw new InvalidArgumentException(get_string('invalidinputparameters','mod_cluequiz'));
